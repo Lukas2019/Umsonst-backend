@@ -1,0 +1,268 @@
+{
+	"info": {
+		"_postman_id": "3e19a926-370c-4fc1-9c4d-c76c5aeecf01",
+		"name": "UmsonstBackend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Posts",
+			"item": [
+				{
+					"name": "Posts",
+					"request": {
+						"auth": {
+							"type": "apikey",
+							"apikey": [
+								{
+									"key": "value",
+									"value": "Token 02b546914e1767fcecf4d319c92810a3ad9ca38a",
+									"type": "string"
+								},
+								{
+									"key": "key",
+									"value": "Authorization",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "title",
+								"value": "122",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "description",
+								"value": "sdafasdfasdf",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "location",
+								"value": "short",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "item_size",
+								"value": "Long",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "Hä 3",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "asdw12sasdf",
+									"type": "text"
+								},
+								{
+									"key": "location",
+									"value": "Siegen",
+									"type": "text"
+								},
+								{
+									"key": "item_size",
+									"value": "Groß",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "B",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/register/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"register",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET PUT and DELET",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/posts/5aba48f1-3ed1-498e-b717-fe2cc28cc3aa/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"posts",
+								"5aba48f1-3ed1-498e-b717-fe2cc28cc3aa",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "create token",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "username",
+							"value": "lhuebner-phi",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "1234",
+							"type": "text"
+						},
+						{
+							"key": "save",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api-token-auth/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api-token-auth",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "REgister_",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "Token 02b546914e1767fcecf4d319c92810a3ad9ca38a",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "title",
+						"value": "122",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "description",
+						"value": "sdafasdfasdf",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "location",
+						"value": "short",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "item_size",
+						"value": "Long",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "title",
+							"value": "Hä 3",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "asdw12sasdf",
+							"type": "text"
+						},
+						{
+							"key": "location",
+							"value": "Siegen",
+							"type": "text"
+						},
+						{
+							"key": "item_size",
+							"value": "Groß",
+							"type": "text"
+						},
+						{
+							"key": "type",
+							"value": "B",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/register/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"register",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

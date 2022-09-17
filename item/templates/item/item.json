@@ -1,0 +1,6 @@
+{
+{% for t in title %}
+'title':'{{ t.title }}',
+'description':'{{ t.description }}',
+{% endfor %}
+}

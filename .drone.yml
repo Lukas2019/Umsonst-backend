@@ -1,0 +1,33 @@
+kind: pipeline
+type: docker
+name: default
+
+steps:
+- name: refresh_umsonst_server
+  image: appleboy/drone-ssh
+  settings:
+    host: 45.131.109.229
+    username: root
+    key:
+      from_secret: umsonst_ssh_key
+    port: 5092
+    script:
+      - cd scripts/
+      - ./refreshUmsonstBackend.sh
+  when:
+    branch:
+    - stable
+- name: webhook_message
+  image: plugins/webhook
+  settings:
+    content_type: application/x-www-form-urlencoded
+    urls: https://beta.goeke.chat/api/v1/messages/752K4FYIOY1Z?access_token=92bfb36e-b785-4b3d-9e78-575cf092de68
+    template: |
+      {{#success build.status}}
+        message=✔ Umsonst Server: @{{ build.author }} successfully pushed to {{ build.branch}} in {{ repo.name }}
+      {{else}}
+        message=❌ Umsonst Server: @{{ build.author }} broke the build. Hang your head in shame :P <br> {{ repo.name }} {{ build.branch}}
+      {{/success}}      
+  when:
+    branch:
+    - stable
