@@ -13,4 +13,5 @@ router.register(r'post-image', ItemPictureView, basename='Image')
 router.register(r'sharecircle-info',ShareCircleInfoView,
                 basename='sharecircle-info')
 
+
 urlpatterns = router.urls

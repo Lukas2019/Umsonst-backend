@@ -22,12 +22,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ll47x2iun7@vd3h2afx2ic1y8+kx-==-o5vk(377j^ry2n$g6h'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['web']
+ALLOWED_HOSTS = ['web', 'localhost']
 CSRF_TRUSTED_ORIGINS = ['http://teilen.umsonstapp.de/',
                         'http://127.0.0.1',
-                        'http://45.131.109.229', ]
+                        'http://45.131.109.229',
+                        'http://localhost' ]
 # Application definition
 
 INSTALLED_APPS = [
@@ -76,7 +77,7 @@ WSGI_APPLICATION = 'um_be.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-'''
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -95,7 +96,7 @@ DATABASES = {
         'PORT': 5432,
     }
 }
-
+'''
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -145,9 +146,13 @@ MEDIA_URL = 'files/'
 APPEND_SLASH=False
 
 # Rest
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
+        #'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        #'rest_framework.authtoken'
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
