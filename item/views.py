@@ -5,7 +5,8 @@ from item.models import Item, ItemPictures, ShareCircle
 from .serializers import (PostSerializer,
                           PicturesSerializer,
                           ShareCircleInfoSerializer,
-                          PostSerializerAdmin)
+                          PostSerializerAdmin,
+                          ItemsInShareCircleView)
 from rest_framework.response import Response
 from .permissions import (IsOwnerPermission,
                           IsSharCircleAdminPermission,
@@ -44,6 +45,7 @@ class ItemView(viewsets.ModelViewSet):
     # shows all items some on is allowed to
     permission_classes = [permissions.IsAuthenticated]
     #serializer_class = PostSerializer
+    #queryset = Item.objects.all()
     admin = False
 
     def perform_create(self, serializer):
@@ -66,8 +68,10 @@ class ItemView(viewsets.ModelViewSet):
 
     def get_queryset(self):
         id = self.request.user.id
-        return Item.objects.filter(
-            sharecircle__user__id__exact=id).distinct(Item.itemID)
+        query = Item.objects.filter(
+             user__id=id).all()
+        return query
+    
 
     def only_allowed_flag(self, request, serializer):
         id = request.user.id
@@ -98,3 +102,11 @@ class ShareCircleInfoView(viewsets.ModelViewSet):
     def get_queryset(self):
         id = self.request.user.id
         return ShareCircle.objects.filter(user__id__exact=id)
+    
+class ItemsInShareCircleView(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = ItemsInShareCircleView
+
+    def get_queryset(self):
+        item = self.kwargs['slug']
+        return Item.objects.filter(sharecircle__exact=item).all()

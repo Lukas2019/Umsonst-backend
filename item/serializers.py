@@ -14,7 +14,7 @@ class PicturesSerializer(serializers.ModelSerializer):
 class PicturesSerializerForPost(serializers.ModelSerializer):
     class Meta:
         model = ItemPictures
-        fields = ('itemPicture', 'id')
+        fields = ('id')#('itemPicture', 'id')
 
 class PostSerializer(serializers.ModelSerializer):
     images = PicturesSerializerForPost(read_only=True, many=True, )
@@ -49,3 +49,8 @@ class ShareCircleInfoSerializer(serializers.ModelSerializer):
         model = ShareCircle
         fields = ['id', 'title', 'description', 'user', 'admin', 'user',]
         #depth = 2
+
+class ItemsInShareCircleView(serializers.ModelSerializer):
+    class Meta:
+        model = Item
+        fields = '__all__'
