@@ -6,7 +6,6 @@ from .serializers import (PostSerializer,
                           PicturesSerializer,
                           ShareCircleInfoSerializer,
                           PostSerializerAdmin,
-                          ItemsInShareCircleView,
                           ItemsInShareCircleSerializer,)
 from rest_framework.response import Response
 from .permissions import (IsOwnerPermission,
@@ -118,11 +117,3 @@ class ShareCircleInfoView(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     
-class ItemsInShareCircleView(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = ItemsInShareCircleView
-
-    def get_queryset(self):
-        item = "9f5c0d38-351c-4075-97b2-8714d2b2de5a"
-        # item = self.kwargs['slug']
-        return Item.objects.filter(sharecircle__exact=item).all()
