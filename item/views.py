@@ -6,11 +6,13 @@ from .serializers import (PostSerializer,
                           PicturesSerializer,
                           ShareCircleInfoSerializer,
                           PostSerializerAdmin,
-                          ItemsInShareCircleView)
+                          ItemsInShareCircleView,
+                          ItemsInShareCircleSerializer,)
 from rest_framework.response import Response
 from .permissions import (IsOwnerPermission,
                           IsSharCircleAdminPermission,
                           Variant,)
+from rest_framework.decorators import action
 
 class ItemPictureView(mixins.CreateModelMixin,
                    mixins.RetrieveModelMixin,
@@ -103,10 +105,24 @@ class ShareCircleInfoView(viewsets.ModelViewSet):
         id = self.request.user.id
         return ShareCircle.objects.filter(user__id__exact=id)
     
+    @action(detail=True, methods=['GET'])
+    def items(self, request, pk=None):
+        """
+        Benutzerdefinierte Aktion für ein einzelnes Item.
+        Beispiel-URL: /sharecircle-info/<pk>/items/
+        """
+        item = self.get_object()
+        # Führe hier deine benutzerdefinierte Logik aus
+        list_of_items= Item.objects.filter(sharecircle__exact=pk).all()
+        serializer = ItemsInShareCircleSerializer(list_of_items, many=True)
+        return Response(serializer.data)
+
+    
 class ItemsInShareCircleView(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = ItemsInShareCircleView
 
     def get_queryset(self):
-        item = self.kwargs['slug']
+        item = "9f5c0d38-351c-4075-97b2-8714d2b2de5a"
+        # item = self.kwargs['slug']
         return Item.objects.filter(sharecircle__exact=item).all()

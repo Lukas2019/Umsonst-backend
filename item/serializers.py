@@ -14,7 +14,7 @@ class PicturesSerializer(serializers.ModelSerializer):
 class PicturesSerializerForPost(serializers.ModelSerializer):
     class Meta:
         model = ItemPictures
-        fields = ('id')#('itemPicture', 'id')
+        fields = ['id']#('itemPicture', 'id')
 
 class PostSerializer(serializers.ModelSerializer):
     images = PicturesSerializerForPost(read_only=True, many=True, )
@@ -54,3 +54,8 @@ class ItemsInShareCircleView(serializers.ModelSerializer):
     class Meta:
         model = Item
         fields = '__all__'
+
+class ItemsInShareCircleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Item
+        fields = '__all__'  # Wir nehmen an, dass Sie alle Felder des Item-Modells serialisieren möchten
