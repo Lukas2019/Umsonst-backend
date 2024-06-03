@@ -1,5 +1,5 @@
 # god doku https://blog.logrocket.com/django-rest-framework-build-an-api-in-15-minutes/
-from rest_framework import status, permissions, viewsets, mixins
+from rest_framework import status, filters, permissions, generics, viewsets, mixins
 from item.models import Item, ItemPictures, ShareCircle
 
 from .serializers import (PostSerializer,
@@ -100,6 +100,7 @@ class ItemView(viewsets.ModelViewSet):
 class ShareCircleInfoView(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = ShareCircleInfoSerializer
+
     def get_queryset(self):
         id = self.request.user.id
         return ShareCircle.objects.filter(user__id__exact=id)
@@ -131,3 +132,9 @@ class ShareCircleInfoView(viewsets.ModelViewSet):
         serializer = ItemsInShareCircleSerializer(list_of_items, many=True)
         return Response(serializer.data)
     
+
+class ShareCircleSearchView(generics.ListAPIView):
+    search_fields = ['title']
+    filter_backends = (filters.SearchFilter,)
+    queryset = ShareCircle.objects.all()
+    serializer_class = ShareCircleInfoSerializer
