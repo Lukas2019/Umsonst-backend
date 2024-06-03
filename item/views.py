@@ -42,7 +42,7 @@ class ItemPictureView(mixins.CreateModelMixin,
                             'change it'})
 
 # main feed
-class ItemView(viewsets.ModelViewSet):
+class MyItemView(viewsets.ModelViewSet):
     # shows all items some on is allowed to
     permission_classes = [permissions.IsAuthenticated]
     #serializer_class = PostSerializer
@@ -85,6 +85,11 @@ class ItemView(viewsets.ModelViewSet):
 
     def validated_data(self):
         pass
+
+class ItemView(generics.RetrieveAPIView):
+    serializer_class = PostSerializer
+    queryset = Item.objects.all()
+
 
     # def create(self, request, *args, **kwargs):
     #     serializer = self.get_serializer(data=request.data)
@@ -133,8 +138,47 @@ class ShareCircleInfoView(viewsets.ModelViewSet):
         return Response(serializer.data)
     
 
-class ShareCircleSearchView(generics.ListAPIView):
+class ShareCircleSearchView(generics.ListCreateAPIView):
     search_fields = ['title']
     filter_backends = (filters.SearchFilter,)
     queryset = ShareCircle.objects.all()
     serializer_class = ShareCircleInfoSerializer
+
+
+class ShareCircleItemsView(generics.ListAPIView):
+    serializer_class = ItemsInShareCircleSerializer
+    search_fields = ['title', 'description']
+    filter_backends = (filters.SearchFilter,)
+
+
+    def get_queryset(self):
+        slug = self.kwargs['slug']
+        return Item.objects.filter(sharecircle__exact=slug).all()
+    
+class ShareCircleView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ShareCircleInfoSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        return ShareCircle.objects.filter(id__exact=pk).all()
+
+    def put(self, request, *args, **kwargs):
+        if not ShareCircle.objects.filter(admin__exact=self.request.user.id)\
+            .filter(id__exact=kwargs['pk']).exists():
+            return Response({"detail": "You are not an admin of this ShareCircle"},
+                           status=status.HTTP_403_FORBIDDEN)
+        return self.update(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        if not ShareCircle.objects.filter(admin__exact=self.request.user.id)\
+            .filter(id__exact=kwargs['pk']).exists():
+            return Response({"detail": "You are not an admin of this ShareCircle"},
+                           status=status.HTTP_403_FORBIDDEN)
+        return self.partial_update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        if not ShareCircle.objects.filter(admin__exact=self.request.user.id)\
+            .filter(id__exact=kwargs['pk']).exists():
+            return Response({"detail": "You are not an admin of this ShareCircle"},
+                           status=status.HTTP_403_FORBIDDEN)
+        return self.destroy(request, *args, **kwargs)

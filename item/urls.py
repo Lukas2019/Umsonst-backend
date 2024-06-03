@@ -2,23 +2,29 @@ from django.urls import path, include
 
 from .views import (
     ItemPictureView,
-    ItemView,
+    MyItemView,
     ShareCircleInfoView,
     ShareCircleSearchView,
+    ShareCircleItemsView,
+    ShareCircleView,
+    ItemView
 )
 from django.conf.urls.static import static
 from django.conf import settings
 from rest_framework import routers
 
 urlpatterns = [
-    path('sharecircle/search/',ShareCircleSearchView.as_view(), name='questions'),
+    path('sharecircle/',ShareCircleSearchView.as_view(), name='questions'),
+    path('sharecircle/<slug:pk>/',ShareCircleView.as_view(), name='sharecircle-info'),
+    path('sharecircle/<slug:slug>/items/',ShareCircleItemsView.as_view(), name='sharecircle-items'),
+    path('post/<slug:pk>/',ItemView.as_view(), name='post')
     ]
 
-router = routers.SimpleRouter(trailing_slash=False) #trailing_slash=False)
-router.register(r'post', ItemView, basename='post' )
+router = routers.SimpleRouter()
+router.register(r'my-post', MyItemView, basename='my-post' )
 router.register(r'post-image', ItemPictureView, basename='Image')
-router.register(r'sharecircle',ShareCircleInfoView,
-                basename='sharecircle-info')
+#router.register(r'sharecircle',ShareCircleInfoView,
+#                basename='sharecircle-info')
 #router.register(r'sharecircle/search',ShareCircleSearchView,basename='sharecircle-search')
 
 
