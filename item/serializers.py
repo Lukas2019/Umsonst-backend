@@ -49,10 +49,11 @@ class ShareCircleInfoSerializer(serializers.ModelSerializer):
         model = ShareCircle
         fields = ['id', 'title', 'description', 'user', 'admin', 'user',]
         #depth = 2
+        
 
 
 
 class ItemsInShareCircleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
-        fields = '__all__'  # Wir nehmen an, dass Sie alle Felder des Item-Modells serialisieren möchten
+        fields = '__all__'

@@ -104,16 +104,30 @@ class ShareCircleInfoView(viewsets.ModelViewSet):
         id = self.request.user.id
         return ShareCircle.objects.filter(user__id__exact=id)
     
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user, admin=self.request.user)
+    
+    def perform_update(self, serializer):
+        # Prüft, ob der Benutzer ein Admin des ShareCircle ist
+        if not ShareCircle.objects.filter(admin__exact=self.request.user.id)\
+            .filter(id__exact=serializer.instance.id).exists():
+            return Response({"detail": "You are not an admin of this ShareCircle"},
+                           status=status.HTTP_403_FORBIDDEN)
+        serializer.save()
+    
     @action(detail=True, methods=['GET'])
     def items(self, request, pk=None):
         """
         Benutzerdefinierte Aktion für ein einzelnes Item.
         Beispiel-URL: /sharecircle-info/<pk>/items/
         """
-        item = self.get_object()
         # Führe hier deine benutzerdefinierte Logik aus
-        list_of_items= Item.objects.filter(sharecircle__exact=pk).all()
+        list_of_items= Item.objects.filter(sharecircle__exact=pk).filter(is_active=True).all()
+        # Prüfe, ob der Benutzer user im ShareCircle ist
+        if not ShareCircle.objects.filter(user__exact=request.user.id)\
+            .filter(id__exact=pk).exists():
+            return Response({"detail": "You are not in this ShareCircle"},
+                           status=status.HTTP_403_FORBIDDEN)
         serializer = ItemsInShareCircleSerializer(list_of_items, many=True)
         return Response(serializer.data)
-
     
