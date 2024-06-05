@@ -17,11 +17,11 @@ urlpatterns = [
     path('sharecircle/',ShareCircleSearchView.as_view(), name='questions'),
     path('sharecircle/<slug:pk>/',ShareCircleView.as_view(), name='sharecircle-info'),
     path('sharecircle/<slug:slug>/items/',ShareCircleItemsView.as_view(), name='sharecircle-items'),
-    path('post/<slug:pk>/',ItemView.as_view(), name='post')
+    path('item/<slug:pk>/',ItemView.as_view(), name='post')
     ]
 
 router = routers.SimpleRouter()
-router.register(r'my-post', MyItemView, basename='my-post' )
+router.register(r'my-item', MyItemView, basename='my-item' )
 router.register(r'post-image', ItemPictureView, basename='Image')
 #router.register(r'sharecircle',ShareCircleInfoView,
 #                basename='sharecircle-info')

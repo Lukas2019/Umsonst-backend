@@ -1,5 +1,5 @@
 from .models import ItemPictures, Item, ShareCircle
-from user.models import Users
+from user.models import User
 from rest_framework import serializers
 
 

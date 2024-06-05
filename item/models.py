@@ -1,6 +1,7 @@
 import uuid
 import os
-from django.contrib.auth.models import User
+
+from user.models import User
 
 from django.db import models
 from rest_framework.exceptions import ValidationError
@@ -68,6 +69,8 @@ def validate_image(fieldfile_obj):
     megabyte_limit = 5.0
     if filesize > megabyte_limit*1024*1024:
         raise ValidationError("Max file size is %sMB" % str(megabyte_limit))
+
+
 class ItemPictures(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     itemPicture = models.ImageField(upload_to=content_file_name,
@@ -75,8 +78,6 @@ class ItemPictures(models.Model):
                                     validators=[validate_image])
     forItems = models.ForeignKey(Item, on_delete=models.DO_NOTHING,
                                  related_name='images')
-
-
 
 
 class ShareCircle(models.Model):
