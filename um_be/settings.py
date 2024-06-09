@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
 from pathlib import Path
+import socket
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,6 +30,10 @@ CSRF_TRUSTED_ORIGINS = ['http://teilen.umsonstapp.de/',
                         'http://127.0.0.1',
                         'http://45.131.109.229',
                         'http://localhost' ]
+
+
+HOSTNAME = 'localhost'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -42,6 +47,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'user',
+    'django_rest_passwordreset',
 ]
 
 MIDDLEWARE = [
@@ -59,7 +65,7 @@ ROOT_URLCONF = 'um_be.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -71,6 +77,8 @@ TEMPLATES = [
         },
     },
 ]
+
+
 
 WSGI_APPLICATION = 'um_be.wsgi.application'
 
@@ -96,6 +104,27 @@ DATABASES = {
         'PORT': 5432,
     }
 }
+'''
+
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_FILE_PATH = "/tmp/app-messages"
+
+'''
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.mailersend.net'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+DEFAULT_FROM_EMAIL = "MS_GxRoat@trial-0r83ql3o3nzlzw1j.mlsender.net"
+EMAIL_HOST_USER = "MS_GxRoat@trial-0r83ql3o3nzlzw1j.mlsender.net"
+EMAIL_HOST_PASSWORD = 'gSDDDmQKs8f5Vemn' # os.environ.get('EMAIL_PASSWORD')
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp-relay.brevo.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+DEFAULT_FROM_EMAIL = "763969001@smtp-brevo.com"
+EMAIL_HOST_USER = "763969001@smtp-brevo.com"
+EMAIL_HOST_PASSWORD = 'JHrWwEfL14DQ276T' # os.environ.get('EMAIL_PASSWORD')
 '''
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
