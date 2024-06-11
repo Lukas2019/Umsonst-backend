@@ -1,4 +1,5 @@
 # god doku https://blog.logrocket.com/django-rest-framework-build-an-api-in-15-minutes/
+from django.urls import reverse
 from rest_framework import status, filters, permissions, generics, viewsets, mixins
 from item.models import Item, ItemPictures, ShareCircle
 
@@ -12,6 +13,25 @@ from .permissions import (IsOwnerPermission,
                           IsSharCircleAdminPermission,
                           Variant,)
 from rest_framework.decorators import action
+from django.views.generic import TemplateView
+
+
+class APIDokumentation(TemplateView):
+    template_name = 'api.html'
+    
+    def get_context_data(self, **kwargs):
+        context = {}
+        context = super().get_context_data(**kwargs)
+        context['urls'] = [
+            reverse('questions'),
+            reverse('sharecircle-info', args=['slug']),
+            reverse('sharecircle-items', args=['slug']),
+            reverse('api'),
+            reverse('post', args=['slug']),
+            reverse('my-item-list'),
+            reverse('Image-list')
+            ]
+
 
 class ItemPictureView(mixins.CreateModelMixin,
                    mixins.RetrieveModelMixin,

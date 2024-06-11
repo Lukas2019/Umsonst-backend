@@ -15,7 +15,7 @@ from django.conf import settings
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
 
-    url = reverse('password_reset_change', kwargs={'token': reset_password_token.key})
+    url = reverse('user:password_reset_change', kwargs={'token': reset_password_token.key})
 
 
     # the below like concatinates your websites reset password url and the reset email token which will be required at a later stage
@@ -91,7 +91,7 @@ class User(AbstractBaseUser):
     longitude = models.FloatField(max_length=17,blank=True, null=True)
     latitude = models.FloatField(max_length=17,blank=True, null=True)
 
-    profile_picture = models.ImageField(upload_to='', max_length=800)
+    profile_picture = models.ImageField(upload_to='', max_length=800, null=True, blank=True)
 
     is_admin = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)

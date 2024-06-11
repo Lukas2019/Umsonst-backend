@@ -9,7 +9,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
 from django.views.generic import TemplateView
 
-from .serializers import UserSerializer
+from .serializers import MyUserSerializer, UserSerializer
 
 
 class UserCreate(generics.CreateAPIView):
@@ -21,9 +21,15 @@ class SetPassword(TemplateView):
     template_name = 'reset_password.html'
 
     def get_context_data(self, **kwargs):
-        #context = super().get_context_data(**kwargs)
         context = {}
-        context['token'] = self.request.GET.get('token')
-        context['url'] = reverse('password_reset:reset-password-confirm')
+        context = super().get_context_data(**kwargs)
+        #context['token'] = self.request.GET.get('token')
+        context['url'] = reverse('user:password_reset:reset-password-confirm')
         return context
 
+class UserView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = MyUserSerializer
+
+    def get_object(self):
+        return self.request.user

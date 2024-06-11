@@ -7,16 +7,20 @@ from .views import (
     ShareCircleSearchView,
     ShareCircleItemsView,
     ShareCircleView,
-    ItemView
+    ItemView,
+    APIDokumentation
 )
 from django.conf.urls.static import static
 from django.conf import settings
 from rest_framework import routers
 
+app_name = 'item'
+
 urlpatterns = [
     path('sharecircle/',ShareCircleSearchView.as_view(), name='questions'),
     path('sharecircle/<slug:pk>/',ShareCircleView.as_view(), name='sharecircle-info'),
     path('sharecircle/<slug:slug>/items/',ShareCircleItemsView.as_view(), name='sharecircle-items'),
+    path('',APIDokumentation.as_view(), name='api'),
     path('item/<slug:pk>/',ItemView.as_view(), name='post')
     ]
 

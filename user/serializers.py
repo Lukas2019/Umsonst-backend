@@ -13,4 +13,9 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
-    
+
+class MyUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        exclude = ('password', 'is_admin', 'is_superuser', 'is_active', 'is_freezed', 'is_staff', )
+        read_only_fieled = ['id', 'last_login', 'date_joined', 'is_admin', 'is_superuser', 'is_active', 'is_freezed', 'is_staff', 'username',]
