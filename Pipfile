@@ -10,7 +10,7 @@ djangorestframework = "*"
 psycopg2 = "*"
 gunicorn = "*"
 sentry-sdk = "*"
-django-rest-passwordreset = "*
+django-rest-passwordreset = "*"
 
 [dev-packages]
 
