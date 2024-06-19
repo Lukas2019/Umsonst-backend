@@ -106,6 +106,7 @@ DATABASES = {
 }
 '''
 
+'''.
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 EMAIL_FILE_PATH = "/tmp/app-messages"
 
@@ -117,7 +118,7 @@ EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = "MS_GxRoat@trial-0r83ql3o3nzlzw1j.mlsender.net"
 EMAIL_HOST_USER = "MS_GxRoat@trial-0r83ql3o3nzlzw1j.mlsender.net"
 EMAIL_HOST_PASSWORD = 'gSDDDmQKs8f5Vemn' # os.environ.get('EMAIL_PASSWORD')
-
+'''
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp-relay.brevo.com'
 EMAIL_USE_TLS = True
