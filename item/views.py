@@ -182,7 +182,10 @@ class ShareCircleView(generics.RetrieveUpdateDestroyAPIView):
         pk = self.kwargs['pk']
         return ShareCircle.objects.filter(id__exact=pk).all()
 
-    def put(self, request, *args, **kwargs):
+    def put(self, request, *args,
+            
+            
+             **kwargs):
         if not ShareCircle.objects.filter(admin__exact=self.request.user.id)\
             .filter(id__exact=kwargs['pk']).exists():
             return Response({"detail": "You are not an admin of this ShareCircle"},

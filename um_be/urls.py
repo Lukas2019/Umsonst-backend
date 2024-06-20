@@ -25,4 +25,5 @@ urlpatterns = [
     path('api/', include('item.urls', namespace="item")),
     path('api/user/', include('user.urls',namespace="user"),),
     path('api/token-auth/', obtain_auth_token, name='api_token_auth'),
+    path('api/chat/', include('chat.urls', namespace="chat"),),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
