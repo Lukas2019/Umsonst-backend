@@ -11,6 +11,7 @@ psycopg2 = "*"
 gunicorn = "*"
 sentry-sdk = "*"
 django-rest-passwordreset = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
