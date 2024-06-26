@@ -2,6 +2,9 @@
 from django.urls import reverse
 from rest_framework import status, filters, permissions, generics, viewsets, mixins
 from item.models import Item, ItemPictures, ShareCircle
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from .serializers import (PostSerializer,
                           PicturesSerializer,
@@ -15,7 +18,7 @@ from .permissions import (IsOwnerPermission,
 from rest_framework.decorators import action
 from django.views.generic import TemplateView
 
-
+'''
 class APIDokumentation(TemplateView):
     template_name = 'api.html'
     
@@ -31,6 +34,14 @@ class APIDokumentation(TemplateView):
             reverse('my-item-list'),
             reverse('Image-list')
             ]
+'''
+
+class AuthenticatedUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        # Wenn der Benutzer authentifiziert ist, wird eine positive Antwort zurückgegeben
+        return Response({"status": "OK"})
 
 
 class ItemPictureView(mixins.CreateModelMixin,

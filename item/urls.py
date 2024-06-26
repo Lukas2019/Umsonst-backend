@@ -7,8 +7,8 @@ from .views import (
     ShareCircleSearchView,
     ShareCircleItemsView,
     ShareCircleView,
-    ItemView,
-    APIDokumentation
+    AuthenticatedUserView,
+    TestView,
 )
 from django.conf.urls.static import static
 from django.conf import settings
@@ -20,7 +20,8 @@ urlpatterns = [
     path('sharecircle/',ShareCircleSearchView.as_view(), name='questions'),
     path('sharecircle/<slug:pk>/',ShareCircleView.as_view(), name='sharecircle-info'),
     path('sharecircle/<slug:slug>/items/',ShareCircleItemsView.as_view(), name='sharecircle-items'),
-    path('',APIDokumentation.as_view(), name='api'),
+    path('auth-test/', AuthenticatedUserView.as_view(), name='test'),
+    #path('',APIDokumentation.as_view(), name='api'),
     path('item/<slug:pk>/',ItemView.as_view(), name='post')
     ]
 
