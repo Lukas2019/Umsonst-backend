@@ -8,7 +8,7 @@ from .views import (
     ShareCircleItemsView,
     ShareCircleView,
     AuthenticatedUserView,
-    TestView,
+    ItemView,
 )
 from django.conf.urls.static import static
 from django.conf import settings
