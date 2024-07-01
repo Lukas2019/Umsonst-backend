@@ -51,9 +51,3 @@ class ShareCircleInfoSerializer(serializers.ModelSerializer):
         #depth = 2
         
 
-
-
-class ItemsInShareCircleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Item
-        fields = '__all__'

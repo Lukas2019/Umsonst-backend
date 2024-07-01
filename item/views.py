@@ -9,8 +9,7 @@ from rest_framework.response import Response
 from .serializers import (PostSerializer,
                           PicturesSerializer,
                           ShareCircleInfoSerializer,
-                          PostSerializerAdmin,
-                          ItemsInShareCircleSerializer,)
+                          PostSerializerAdmin,)
 from rest_framework.response import Response
 from .permissions import (IsOwnerPermission,
                           IsSharCircleAdminPermission,
@@ -177,7 +176,7 @@ class ShareCircleSearchView(generics.ListCreateAPIView):
 
 
 class ShareCircleItemsView(generics.ListAPIView):
-    serializer_class = ItemsInShareCircleSerializer
+    serializer_class = PostSerializer
     search_fields = ['title', 'description']
     filter_backends = (filters.SearchFilter,)
 

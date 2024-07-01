@@ -27,7 +27,7 @@ urlpatterns = [
 
 router = routers.SimpleRouter()
 router.register(r'my-item', MyItemView, basename='my-item' )
-router.register(r'post-image', ItemPictureView, basename='Image')
+router.register(r'image', ItemPictureView, basename='Image')
 #router.register(r'sharecircle',ShareCircleInfoView,
 #                basename='sharecircle-info')
 #router.register(r'sharecircle/search',ShareCircleSearchView,basename='sharecircle-search')
