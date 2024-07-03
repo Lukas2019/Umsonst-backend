@@ -14,46 +14,21 @@ class Item(models.Model):
         (OFFER, 'Offer'),
         (SEARCH, 'Search'),
     ]
-    MATERIAL = 'M'
-    IMMATERIAL = 'I'
-    CATEGORY = [
-        (MATERIAL, 'Material'),
-        (IMMATERIAL, 'Immaterial'),
-    ]
-    SMALL = 'S'
-    MEDIUM = 'M'
-    LAGE = 'L'
-    SIZE = [
-        (SMALL, 'Small'),
-        (MEDIUM, 'Medium'),
-        (LAGE, 'Lage'),
-    ]
 
 
     title = models.CharField(max_length=32)
 
     type = models.CharField(max_length=1, choices=TYPES, default=OFFER)
-    category = models.CharField(max_length=1, choices=CATEGORY, default=MATERIAL)
     description = models.TextField()
     itemID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    item_size = models.CharField(max_length=32, choices=SIZE, default=MEDIUM)
     timestamp = models.DateTimeField(auto_now_add = True, auto_now = False, blank = True)
     updated = models.DateTimeField(auto_now = True, blank = True)
     user = models.ForeignKey(User, on_delete = models.CASCADE)
+    reserved = models.BooleanField(default=False)
 
-
-    # adresse # default the one of the User
-    country = models.CharField(max_length=30, blank=True, null=True)
-    zipcode = models.CharField(max_length=30, blank=True, null=True)
-    city = models.CharField(max_length=30, blank=True, null=True)
-    street = models.CharField(max_length=30, blank=True, null=True)
-    house_number = models.IntegerField(blank=True, null=True)
-
-    longitude = models.FloatField(max_length=17, blank=True, null=True)
-    latitude = models.FloatField(max_length=17, blank=True, null=True)
 
     is_active = models.BooleanField(default=True)
-    #flagged = models.BooleanField(default=False)
+    flagged = models.BooleanField(default=False)
     sharecircle = models.ManyToManyField("ShareCircle")
 
     def __str__(self):
@@ -86,6 +61,4 @@ class ShareCircle(models.Model):
     description = models.TextField(max_length=140, blank=True, null=True)
     user = models.ManyToManyField(User)
     admin = models.ManyToManyField(User, related_name='sharecircle_admin_set')
-    flagged = models.ForeignKey(Item, on_delete=models.DO_NOTHING,
-                                related_name='flagged', null=True, blank=True)
 

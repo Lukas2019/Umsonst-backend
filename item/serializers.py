@@ -22,8 +22,8 @@ class PostSerializer(serializers.ModelSerializer):
     # default=serializers.CurrentUserDefault(),)
     class Meta:
         model = Item
-        fields = ['title', 'description', 'type', 'category', 'itemID',
-                  'item_size', 'sharecircle', 'user', 'longitude', 'latitude',
+        fields = ['title', 'description', 'type', 'itemID',
+                  'sharecircle', 'user', 'reserved', 
                   'images', 'is_active', 'timestamp', 'updated', 'flagged']
         extra_kwargs = {
             'flagged': {'read_only': True},
