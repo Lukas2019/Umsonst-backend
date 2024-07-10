@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from user.models import User
 from django.shortcuts import render
@@ -27,9 +28,17 @@ class SetPassword(TemplateView):
         context['url'] = reverse('user:password_reset:reset-password-confirm')
         return context
 
-class UserView(generics.RetrieveUpdateDestroyAPIView):
+class UserViewMe(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = MyUserSerializer
 
     def get_object(self):
         return self.request.user
+    
+class UserView(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = MyUserSerializer
+
+    def get_object(self):
+        slug = self.kwargs.get('slug')
+        return get_object_or_404(User, id=slug)
