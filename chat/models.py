@@ -1,6 +1,7 @@
 from user.models import User
 import uuid
 from django.db import models
+import time
 
 # Chats
 class Chat(models.Model):
@@ -15,3 +16,7 @@ class Message(models.Model):
     user = models.ForeignKey('user.User', on_delete=models.CASCADE)
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def get_created_at_unix(self):
+        """Gibt das `created_at` Datum als Unix-Zeitstempel zurück."""
+        return int(time.mktime(self.created_at.timetuple()))
