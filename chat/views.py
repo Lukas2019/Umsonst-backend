@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.shortcuts import render
+from django.db.models import Max
 from rest_framework.generics import ListCreateAPIView, CreateAPIView
 from .models import Chat, Message
 from user.models import User
@@ -14,7 +14,8 @@ class ChatsView(ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return Chat.objects.filter(user1=user) | Chat.objects.filter(user2=user)
+        chat = Chat.objects.filter(user1=user) | Chat.objects.filter(user2=user)
+        return chat.annotate(last_message_date=Max('messages__created_at')).order_by('-last_message_date')
     
 
     def create(self, request, *args, **kwargs):
@@ -64,7 +65,7 @@ class MessageView(ListCreateAPIView):
     serializer_class = MessageSerializer
 
     def get_queryset(self):
-        return Message.objects.filter(chat=self.kwargs['slug'])
+        return Message.objects.filter(chat=self.kwargs['slug']).order_by('-created_at')
 
     def perform_create(self, serializer):
         user = self.request.user

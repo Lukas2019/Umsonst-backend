@@ -183,7 +183,7 @@ class ShareCircleItemsView(generics.ListAPIView):
 
     def get_queryset(self):
         slug = self.kwargs['slug']
-        return Item.objects.filter(sharecircle__exact=slug).all()
+        return Item.objects.filter(sharecircle__exact=slug).all().order_by('-timestamp')
     
 class ShareCircleView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ShareCircleInfoSerializer
