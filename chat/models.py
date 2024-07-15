@@ -1,3 +1,4 @@
+from typing import Iterable
 from user.models import User
 import uuid
 from django.db import models
@@ -16,7 +17,9 @@ class Message(models.Model):
     user = models.ForeignKey('user.User', on_delete=models.CASCADE)
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    created_at_unix = models.IntegerField(default=time.time)
 
-    def get_created_at_unix(self):
-        """Gibt das `created_at` Datum als Unix-Zeitstempel zurück."""
-        return int(time.mktime(self.created_at.timetuple()))
+    def save(self, *args, **kwargs):
+        if not self.pk:  # Prüft, ob das Objekt neu ist
+            self.created_at_unix = time.time()
+        super().save(*args, **kwargs)
