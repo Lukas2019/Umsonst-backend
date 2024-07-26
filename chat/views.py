@@ -6,6 +6,7 @@ from user.models import User
 from .serializers import ChatSerializer, MessageSerializer
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 
 # Create your views here.
 class ChatsView(ListCreateAPIView):
@@ -60,9 +61,14 @@ class ChatsView(ListCreateAPIView):
             return Response(json, status=status.HTTP_400_BAD_REQUEST)
     '''
 
+class twentySetPagination(PageNumberPagination):
+    page_size = 20
+
 class MessageView(ListCreateAPIView):
     #queryset = Message.objects.all()
     serializer_class = MessageSerializer
+    pagination_class = twentySetPagination
+
 
     def get_queryset(self):
         return Message.objects.filter(chat=self.kwargs['slug']).order_by('-created_at')
