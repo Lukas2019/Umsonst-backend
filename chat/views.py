@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.db.models import Max
-from rest_framework.generics import ListCreateAPIView, CreateAPIView
+from rest_framework.generics import ListCreateAPIView, CreateAPIView, ListAPIView
 from .models import Chat, Message
 from user.models import User
 from .serializers import ChatSerializer, MessageSerializer
@@ -64,6 +64,15 @@ class ChatsView(ListCreateAPIView):
 class twentySetPagination(PageNumberPagination):
     page_size = 20
 
+    def get_paginated_response(self, data):
+        return Response({
+            'next': self.page.next_page_number() if self.page.has_next() else None,
+            'previous': self.page.previous_page_number() if self.page.has_previous() else None,
+            'count': self.page.paginator.count,
+            'pages': self.page.paginator.count//self.page_size + 1,
+            'results': data
+        })
+
 class MessageView(ListCreateAPIView):
     #queryset = Message.objects.all()
     serializer_class = MessageSerializer
@@ -78,3 +87,14 @@ class MessageView(ListCreateAPIView):
         chat = Chat.objects.get(id=self.kwargs['slug'])
         # Set the user for the message to the current user
         serializer.save(user=user, chat=chat)
+        
+
+class ChatByUserView(ListAPIView):
+    #queryset = Chat.objects.all()
+    serializer_class = ChatSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        user2 = User.objects.get(id=self.kwargs['slug'])
+        chat = Chat.objects.filter(user1=user).filter(user2=user2) | Chat.objects.filter(user2=user).filter(user1=user2)
+        return chat.annotate(last_message_date=Max('messages__created_at')).order_by('-last_message_date')
