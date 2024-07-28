@@ -52,7 +52,7 @@ class ItemPictureView(mixins.CreateModelMixin,
     queryset = ItemPictures.objects.all()
     serializer_class = PicturesSerializer
 
-
+    """
     def get_queryset(self):
         id = self.request.user.id
         return ItemPictures.objects.filter(
@@ -65,7 +65,6 @@ class ItemPictureView(mixins.CreateModelMixin,
             return [IsOwnerPermission(Variant.ItemPicture)]
         else:
             return [permissions.IsAuthenticated()]
-    """
 
     def list(self, request, *args, **kwargs):
         return Response({'detail': 'use /post-image/<id>/ to access an '
