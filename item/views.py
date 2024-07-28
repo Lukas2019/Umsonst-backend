@@ -48,7 +48,7 @@ class ItemPictureView(mixins.CreateModelMixin,
                    mixins.UpdateModelMixin,
                    viewsets.GenericViewSet):
     #http_method_names = ['POST', 'OPTIONS']
-    permission_classes = [permissions.IsAuthenticated]
+    #permission_classes = [permissions.IsAuthenticated]
     queryset = ItemPictures.objects.all()
     serializer_class = PicturesSerializer
 
