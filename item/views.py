@@ -48,7 +48,7 @@ class ItemPictureView(mixins.CreateModelMixin,
                    mixins.UpdateModelMixin,
                    viewsets.GenericViewSet):
     #http_method_names = ['POST', 'OPTIONS']
-    #permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     queryset = ItemPictures.objects.all()
     serializer_class = PicturesSerializer
 
@@ -57,7 +57,7 @@ class ItemPictureView(mixins.CreateModelMixin,
         id = self.request.user.id
         return ItemPictures.objects.filter(
             forItems__sharecircle__user__exact=id)
-
+    """
     def get_permissions(self):
         #deny on change and deled
         ac = self.action
@@ -65,6 +65,7 @@ class ItemPictureView(mixins.CreateModelMixin,
             return [IsOwnerPermission(Variant.ItemPicture)]
         else:
             return [permissions.IsAuthenticated()]
+    """
 
     def list(self, request, *args, **kwargs):
         return Response({'detail': 'use /post-image/<id>/ to access an '
@@ -133,7 +134,7 @@ class ItemView(generics.RetrieveAPIView):
 
 
 class ShareCircleInfoView(viewsets.ModelViewSet):
-    #permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = ShareCircleInfoSerializer
 
     def get_queryset(self):
