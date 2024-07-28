@@ -133,7 +133,7 @@ class ItemView(generics.RetrieveAPIView):
 
 
 class ShareCircleInfoView(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated]
+    #permission_classes = [permissions.IsAuthenticated]
     serializer_class = ShareCircleInfoSerializer
 
     def get_queryset(self):
