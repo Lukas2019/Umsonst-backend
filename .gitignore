@@ -1,6 +1,7 @@
 # custom
 /uploads
-um_be/settings.py
+.env
+# um_be/settings.py
 
 # ---> Python
 # Byte-compiled / optimized / DLL files

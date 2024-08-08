@@ -98,3 +98,25 @@ class ChatByUserView(ListAPIView):
         user2 = User.objects.get(id=self.kwargs['slug'])
         chat = Chat.objects.filter(user1=user).filter(user2=user2) | Chat.objects.filter(user2=user).filter(user1=user2)
         return chat.annotate(last_message_date=Max('messages__created_at')).order_by('-last_message_date')
+
+
+class LastUnreadMessagesView(ListAPIView):
+    serializer_class = MessageSerializer
+
+    def get_queryset(self):
+        id = self.kwargs['slug']
+        user = self.request.user
+        return Message.objects.filter(chat__id=id).exclude(user=user).order_by('created_at')[:1]
+    
+class SetMessagesReadView(CreateAPIView):
+    #queryset = Message.objects.all()
+    serializer_class = MessageSerializer
+
+    def create(self, request, *args, **kwargs):
+        id = self.kwargs['slug']
+        user = request.user
+        messages = Message.objects.filter(chat__id=id).exclude(user=-user).filter(read=False)
+        for message in messages:
+            message.read = True
+            message.save()
+        return Response(status=status.HTTP_200_OK)
