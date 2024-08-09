@@ -87,6 +87,7 @@ class MessageView(ListCreateAPIView):
         chat = Chat.objects.get(id=self.kwargs['slug'])
         # Set the user for the message to the current user
         serializer.save(user=user, chat=chat)
+
         
 
 class ChatByUserView(ListAPIView):
@@ -100,7 +101,7 @@ class ChatByUserView(ListAPIView):
         return chat.annotate(last_message_date=Max('messages__created_at')).order_by('-last_message_date')
 
 
-class LastUnreadMessagesView(GenericAPIView):
+class LastUnreadMessageView(GenericAPIView):
     serializer_class = MessageSerializer
 
     def get_queryset(self):
@@ -113,6 +114,36 @@ class LastUnreadMessagesView(GenericAPIView):
         serializer = self.get_serializer(queryset, many=False)
         return Response(serializer.data)
 
+
+class UnreadMessagesChatCountView(GenericAPIView):
+    def get_queryset(self):
+        id = self.kwargs['slug']
+        user = self.request.user
+        if hasattr(user, '_wrapped'):
+            user = user._wrapped
+        return Message.objects.filter(chat__id=id).exclude(user=user).filter(read=False)
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        unread_count = queryset.count()
+        return Response({'unread_count': unread_count})
+        
+class UnreadMessagesCountView(GenericAPIView):
+    def get_queryset(self):
+        user = self.request.user
+        if hasattr(user, '_wrapped'):
+            user = user._wrapped
+        return Chat.objects.filter(user1_id=user) | Chat.objects.filter(user2_id=user)
+
+    def get(self, request, *args, **kwargs):
+        user = self.request.user
+        if hasattr(user, '_wrapped'):
+            user = user._wrapped
+        chats = self.get_queryset()
+        unread_count = 0
+        for chat in chats:
+            unread_count += Message.objects.filter(chat=chat).exclude(user=user).filter(read=False).count()
+        return Response({'unread_count': unread_count})
 
 class ReadMessagesView(GenericAPIView):
     serializer_class = MessageCreateSerializer
