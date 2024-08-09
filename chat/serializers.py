@@ -7,6 +7,12 @@ class MessageSerializer(serializers.ModelSerializer):
         fields = ['id', 'text', 'read', 'created_at', 'user', 'chat']
         read_only_fields = ('user', 'chat')
 
+class MessageCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        exclude =['read', 'created_at', 'user', 'chat', 'id', 'text']
+        read_only_fields = ['read', 'created_at', 'user', 'chat', 'id', 'text']
+
 class ChatSerializer(serializers.ModelSerializer):
 
     class Meta:

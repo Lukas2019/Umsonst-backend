@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.db.models import Max
-from rest_framework.generics import ListCreateAPIView, CreateAPIView, ListAPIView
+from rest_framework.generics import ListCreateAPIView, CreateAPIView, ListAPIView, GenericAPIView
 from .models import Chat, Message
 from user.models import User
-from .serializers import ChatSerializer, MessageSerializer
+from .serializers import ChatSerializer, MessageSerializer,MessageCreateSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
@@ -100,23 +100,33 @@ class ChatByUserView(ListAPIView):
         return chat.annotate(last_message_date=Max('messages__created_at')).order_by('-last_message_date')
 
 
-class LastUnreadMessagesView(ListAPIView):
+class LastUnreadMessagesView(GenericAPIView):
     serializer_class = MessageSerializer
 
     def get_queryset(self):
         id = self.kwargs['slug']
         user = self.request.user
-        return Message.objects.filter(chat__id=id).exclude(user=user).order_by('created_at')[:1]
-    
-class SetMessagesReadView(CreateAPIView):
-    #queryset = Message.objects.all()
-    serializer_class = MessageSerializer
+        return Message.objects.filter(chat__id=id).exclude(user=user).filter(read=False).order_by('created_at').first()
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=False)
+        return Response(serializer.data)
+
+
+class ReadMessagesView(GenericAPIView):
+    serializer_class = MessageCreateSerializer
 
     def create(self, request, *args, **kwargs):
         id = self.kwargs['slug']
         user = request.user
-        messages = Message.objects.filter(chat__id=id).exclude(user=-user).filter(read=False)
+        if hasattr(user, '_wrapped'):
+            user = user._wrapped
+        messages = Message.objects.filter(chat__id=id).exclude(user=user).filter(read=False)
         for message in messages:
             message.read = True
             message.save()
         return Response(status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
