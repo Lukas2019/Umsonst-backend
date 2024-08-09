@@ -10,7 +10,7 @@ urlpatterns = [
     path('unread_count/<slug:slug>/', views.UnreadMessagesChatCountView.as_view(), name='unread-messages-count-view'),
     path('unread/<slug:slug>/', views.LastUnreadMessageView.as_view(), name='unread-messages-view'),
     path('read/<slug:slug>/', views.ReadMessagesView.as_view(), name='read-messages-view'),
-    # path('by_user/<slug:slug>/', views.ChatByUserView.as_view(), name='chat-by-user-view'),
+    path('by_user/<slug:slug>/', views.ChatByUserView.as_view(), name='chat-by-user-view'),
     path('<slug:slug>/', views.MessageView.as_view(), name='message-view'),
 
 ]
