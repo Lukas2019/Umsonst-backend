@@ -119,8 +119,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.mailersend.net'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-DEFAULT_FROM_EMAIL = "MS_GxRoat@trial-0r83ql3o3nzlzw1j.mlsender.net"
-EMAIL_HOST_USER = "MS_GxRoat@trial-0r83ql3o3nzlzw1j.mlsender.net"
+DEFAULT_FROM_EMAIL = "MS_4ZLSje@trial-7dnvo4dyjen45r86.mlsender.net"
+EMAIL_HOST_USER = "MS_4ZLSje@trial-7dnvo4dyjen45r86.mlsender.net"
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 '''
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

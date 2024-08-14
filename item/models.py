@@ -51,7 +51,7 @@ class ItemPictures(models.Model):
     itemPicture = models.ImageField(upload_to=content_file_name,
                                     max_length=800,
                                     validators=[validate_image])
-    forItems = models.ForeignKey(Item, on_delete=models.DO_NOTHING,
+    forItems = models.ForeignKey(Item, on_delete=models.CASCADE,
                                  related_name='images')
 
 
