@@ -35,6 +35,7 @@ class APIDokumentation(TemplateView):
             ]
 '''
 
+
 class AuthenticatedUserView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -100,7 +101,7 @@ class MyItemView(viewsets.ModelViewSet):
     def get_queryset(self):
         id = self.request.user.id
         query = Item.objects.filter(
-             user__id=id).all()
+             user__id=id).all().order_by('-timestamp')
         return query
     
 
