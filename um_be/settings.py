@@ -28,8 +28,8 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['web', 'localhost']
-CSRF_TRUSTED_ORIGINS = ['http://teilen.umsonstapp.de/',
+ALLOWED_HOSTS = ['web', 'localhost','api.umsonstapp.de']
+CSRF_TRUSTED_ORIGINS = ['http://api.umsonstapp.de/',
                         'http://127.0.0.1',
                         'http://45.131.109.229',
                         'http://localhost' ]
