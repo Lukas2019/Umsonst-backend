@@ -29,7 +29,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = ['web', 'localhost','api.umsonstapp.de']
-CSRF_TRUSTED_ORIGINS = ['http://api.umsonstapp.de/',
+CSRF_TRUSTED_ORIGINS = ['https://api.umsonstapp.de/',
                         'http://127.0.0.1',
                         'http://45.131.109.229',
                         'http://localhost' ]
