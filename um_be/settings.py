@@ -116,11 +116,11 @@ EMAIL_FILE_PATH = "/tmp/app-messages"
 
 '''
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.mailersend.net'
+EMAIL_HOST = 'wp11279948.mailout.server-he.de'
 EMAIL_USE_TLS = True
-EMAIL_PORT = 587
-DEFAULT_FROM_EMAIL = "MS_4ZLSje@trial-7dnvo4dyjen45r86.mlsender.net"
-EMAIL_HOST_USER = "MS_4ZLSje@trial-7dnvo4dyjen45r86.mlsender.net"
+EMAIL_PORT = 25
+DEFAULT_FROM_EMAIL = "support@umsonstapp.de"
+EMAIL_HOST_USER = "support@umsonstapp.de"
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 '''
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
