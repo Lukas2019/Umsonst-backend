@@ -31,7 +31,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
         # message:
         email_plaintext_message,
         # from:https://stackoverflow.com/questions/10384657/django-send-mail-not-working-no-email-delivered
-        "Umsonst@klimacamp-siegen.de",
+        "noreply@umsonstapp.de",
         # to:
         recipient_list = [reset_password_token.user.email],
         fail_silently=False,
