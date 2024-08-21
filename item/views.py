@@ -175,6 +175,34 @@ class ShareCircleSearchView(generics.ListCreateAPIView):
     queryset = ShareCircle.objects.all()
     serializer_class = ShareCircleInfoSerializer
 
+    def get(self, request, *args, **kwargs):
+        sharecircles = ShareCircle.objects.all()
+        
+        
+        response_data = []
+        for sharecircle in sharecircles:
+            is_admin = sharecircle.admin == request.user
+            is_member = sharecircle.user.filter(id=request.user.id).exists()
+            
+            # Extrahiere relevante Felder der Benutzer
+            users = [user.id for user in sharecircle.user.all()]
+            admins = [admin.id for admin in sharecircle.admin.all()]
+            
+            sharecircle_data = {
+                'id': sharecircle.id,
+                'title': sharecircle.title,
+                'description': sharecircle.description,
+                'users': users,
+                'admins': admins,
+                'is_admin': is_admin,
+                'is_member': is_member,
+                # Fügen Sie hier weitere Felder hinzu, die Sie in der Antwort haben möchten
+            }
+            response_data.append(sharecircle_data)
+        
+        return Response(response_data, status=status.HTTP_200_OK)
+
+
 
 class ShareCircleItemsView(generics.ListAPIView):
     serializer_class = PostSerializer
@@ -196,10 +224,6 @@ class ShareCircleView(generics.RetrieveUpdateDestroyAPIView):
     def get(self, request, *args, **kwargs):
         sharecircle = ShareCircle.objects.filter(user__exact=self.request.user.id)\
             .filter(id__exact=kwargs['pk']).first()
-        if not ShareCircle.objects.filter(user__exact=self.request.user.id)\
-            .filter(id__exact=kwargs['pk']).exists():
-            return Response({"detail": "You are not in this ShareCircle"},
-                           status=status.HTTP_403_FORBIDDEN)
         '''
         add is_admin and is_member to the response
         '''
