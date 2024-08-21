@@ -47,7 +47,7 @@ class ShareCircleInfoSerializer(serializers.ModelSerializer):
     #id = serializers.
     class Meta:
         model = ShareCircle
-        fields = ['id', 'title', 'description', 'user', 'admin', 'user',]
+        fields = ['id', 'title', 'description', 'user', 'admin', 'user']
         #depth = 2
         
 

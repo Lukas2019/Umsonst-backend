@@ -188,38 +188,30 @@ class ShareCircleItemsView(generics.ListAPIView):
     
 class ShareCircleView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ShareCircleInfoSerializer
-    permission_classes = [permissions.IsAuthenticated, IsSharCircleAdminPermission]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         return ShareCircle.objects.all()
-
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
-    def join(self, request, pk=None):
-        """
-        Benutzer kann sich einem ShareCircle hinzufügen.
-        Beispiel-URL: /sharecircle/<pk>/join/
-        """
-        share_circle = self.get_object()
-        if request.user in share_circle.user.all():
-            return Response({"detail": "You are already a member of this ShareCircle"},
-                            status=status.HTTP_400_BAD_REQUEST)
-        share_circle.user.add(request.user)
-        return Response({"detail": "You have successfully joined the ShareCircle"},
-                        status=status.HTTP_200_OK)
     
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
-    def leave(self, request, pk=None):
-        """
-        Benutzer kann einen ShareCircle verlassen.
-        Beispiel-URL: /sharecircle/<pk>/leave/
-        """
-        share_circle = self.get_object()
-        if request.user not in share_circle.user.all():
-            return Response({"detail": "You are not a member of this ShareCircle"},
-                            status=status.HTTP_400_BAD_REQUEST)
-        share_circle.user.remove(request.user)
-        return Response({"detail": "You have successfully left the ShareCircle"},
-                        status=status.HTTP_200_OK)
+    def get(self, request, *args, **kwargs):
+        sharecircle = ShareCircle.objects.filter(user__exact=self.request.user.id)\
+            .filter(id__exact=kwargs['pk']).first()
+        if not ShareCircle.objects.filter(user__exact=self.request.user.id)\
+            .filter(id__exact=kwargs['pk']).exists():
+            return Response({"detail": "You are not in this ShareCircle"},
+                           status=status.HTTP_403_FORBIDDEN)
+        '''
+        add is_admin and is_member to the response
+        '''
+
+        is_admin = sharecircle.admin == request.user
+        is_member = sharecircle.user.filter(id=request.user.id).exists()
+        
+        response = super().get(request, *args, **kwargs)
+        response.data['is_admin'] = is_admin
+        response.data['is_member'] = is_member 
+        return response
+
 
     def put(self, request, *args, **kwargs):
         if not ShareCircle.objects.filter(admin__exact=self.request.user.id)\
@@ -241,3 +233,28 @@ class ShareCircleView(generics.RetrieveUpdateDestroyAPIView):
             return Response({"detail": "You are not an admin of this ShareCircle"},
                            status=status.HTTP_403_FORBIDDEN)
         return self.destroy(request, *args, **kwargs)
+    
+
+class ShareCircleJoinView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, slug):
+        share_circle = ShareCircle.objects.get(pk=slug)
+        if request.user in share_circle.user.all():
+            return Response({"detail": "You are already a member of this ShareCircle"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        share_circle.user.add(request.user)
+        return Response({"detail": "You have successfully joined the ShareCircle"},
+                        status=status.HTTP_200_OK)
+    
+class ShareCircleLeaveView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, slug):
+        share_circle = ShareCircle.objects.get(pk=slug)
+        if request.user not in share_circle.user.all():
+            return Response({"detail": "You are not a member of this ShareCircle"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        share_circle.user.remove(request.user)
+        return Response({"detail": "You have successfully left the ShareCircle"},
+                        status=status.HTTP_200_OK)

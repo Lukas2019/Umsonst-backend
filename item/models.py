@@ -61,4 +61,3 @@ class ShareCircle(models.Model):
     description = models.TextField(max_length=140, blank=True, null=True)
     user = models.ManyToManyField(User)
     admin = models.ManyToManyField(User, related_name='sharecircle_admin_set')
-

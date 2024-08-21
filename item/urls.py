@@ -9,6 +9,8 @@ from .views import (
     ShareCircleView,
     AuthenticatedUserView,
     ItemView,
+    ShareCircleJoinView,
+    ShareCircleLeaveView,
 )
 from django.conf.urls.static import static
 from django.conf import settings
@@ -20,9 +22,11 @@ urlpatterns = [
     path('sharecircle/',ShareCircleSearchView.as_view(), name='questions'),
     path('sharecircle/<slug:pk>/',ShareCircleView.as_view(), name='sharecircle-info'),
     path('sharecircle/<slug:slug>/items/',ShareCircleItemsView.as_view(), name='sharecircle-items'),
+    path('sharecircle/<slug:slug>/join/', ShareCircleJoinView.as_view(), name='join'),
+    path('sharecircle/<slug:slug>/leave/', ShareCircleLeaveView.as_view(), name='leave'),
     path('auth-test/', AuthenticatedUserView.as_view(), name='test'),
     #path('',APIDokumentation.as_view(), name='api'),
-    path('item/<slug:pk>/',ItemView.as_view(), name='post')
+    path('item/<slug:pk>/',ItemView.as_view(), name='post'),
     ]
 
 router = routers.SimpleRouter()
