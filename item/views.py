@@ -3,6 +3,7 @@ from django.urls import reverse
 from rest_framework import status, filters, permissions, generics, viewsets, mixins
 from item.models import Item, ItemPictures, ShareCircle
 from rest_framework.views import APIView
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -178,13 +179,15 @@ class ShareCircleSearchView(generics.ListCreateAPIView):
     def get(self, request, *args, **kwargs):
         sharecircles = ShareCircle.objects.all()
         
+        paginator = PageNumberPagination()
+        paginated_sharecircles = paginator.paginate_queryset(sharecircles, request)
         
         response_data = []
-        for sharecircle in sharecircles:
+        for sharecircle in paginated_sharecircles:
             is_admin = sharecircle.admin == request.user
             is_member = sharecircle.user.filter(id=request.user.id).exists()
             
-            # Extrahiere relevante Felder der Benutzer
+            # Extract relevant fields of the users
             users = [user.id for user in sharecircle.user.all()]
             admins = [admin.id for admin in sharecircle.admin.all()]
             
@@ -196,11 +199,11 @@ class ShareCircleSearchView(generics.ListCreateAPIView):
                 'admins': admins,
                 'is_admin': is_admin,
                 'is_member': is_member,
-                # Fügen Sie hier weitere Felder hinzu, die Sie in der Antwort haben möchten
+                # Add more fields here if needed
             }
             response_data.append(sharecircle_data)
         
-        return Response(response_data, status=status.HTTP_200_OK)
+        return paginator.get_paginated_response(response_data)
 
 
 
@@ -258,6 +261,13 @@ class ShareCircleView(generics.RetrieveUpdateDestroyAPIView):
                            status=status.HTTP_403_FORBIDDEN)
         return self.destroy(request, *args, **kwargs)
     
+class ShareCircleFeedView(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = PostSerializer
+    
+    def get_queryset(self):
+        share_circles = ShareCircle.objects.filter(user__exact=self.request.user.id).all()
+        return Item.objects.filter(sharecircle__in=share_circles).all().order_by('-timestamp')
 
 class ShareCircleJoinView(APIView):
     permission_classes = [permissions.IsAuthenticated]
