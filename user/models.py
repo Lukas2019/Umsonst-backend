@@ -93,6 +93,8 @@ class User(AbstractBaseUser):
 
     profile_picture = models.ImageField(upload_to='', max_length=800, null=True, blank=True)
 
+    post_circle = models.ForeignKey('item.ShareCircle', on_delete=models.CASCADE, related_name='poster', blank=True, null=True)
+
     is_admin = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)

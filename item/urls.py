@@ -12,6 +12,8 @@ from .views import (
     ShareCircleJoinView,
     ShareCircleLeaveView,
     ShareCircleFeedView,
+    ShareCircleJoinPostView,
+    ShareCircleLeavePostView,
 )
 from django.conf.urls.static import static
 from django.conf import settings
@@ -26,6 +28,8 @@ urlpatterns = [
     path('sharecircle/<slug:slug>/items/',ShareCircleItemsView.as_view(), name='sharecircle-items'),
     path('sharecircle/<slug:slug>/join/', ShareCircleJoinView.as_view(), name='join'),
     path('sharecircle/<slug:slug>/leave/', ShareCircleLeaveView.as_view(), name='leave'),
+    path('sharecircle/<slug:slug>/join-post/', ShareCircleJoinPostView.as_view(), name='join'),
+    path('sharecircle/<slug:slug>/leave-post/', ShareCircleLeavePostView.as_view(), name='leave'),
     path('auth-test/', AuthenticatedUserView.as_view(), name='test'),
     #path('',APIDokumentation.as_view(), name='api'),
     path('item/<slug:pk>/',ItemView.as_view(), name='post'),
