@@ -186,6 +186,7 @@ class ShareCircleSearchView(generics.ListCreateAPIView):
         for sharecircle in paginated_sharecircles:
             is_admin = sharecircle.admin == request.user
             is_member = sharecircle.user.filter(id=request.user.id).exists()
+            is_poster = sharecircle.poster.filter(id=request.user.id).exists()
             
             # Extract relevant fields of the users
             users = [user.id for user in sharecircle.user.all()]
@@ -201,6 +202,7 @@ class ShareCircleSearchView(generics.ListCreateAPIView):
                 'poster': poster,
                 'is_admin': is_admin,
                 'is_member': is_member,
+                'is_poster': is_poster,
                 # Add more fields here if needed
             }
             response_data.append(sharecircle_data)
