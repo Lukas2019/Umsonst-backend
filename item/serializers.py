@@ -16,8 +16,20 @@ class PicturesSerializerForPost(serializers.ModelSerializer):
         model = ItemPictures
         fields = ['id']#('itemPicture', 'id')
 
+# #Share circle
+# sharecircle-info
+class ShareCircleInfoSerializer(serializers.ModelSerializer):
+    # user = UserIDSerializer(read_only=False,many=True,)
+    #id = serializers.
+    class Meta:
+        model = ShareCircle
+        fields = ['id',  'description', 'title', 'admin', 'user']
+        #depth = 2
+        
+
 class PostSerializer(serializers.ModelSerializer):
     images = PicturesSerializerForPost(read_only=True, many=True, )
+    sharecircle = ShareCircleInfoSerializer(read_only=True, many=True,)
     #user = serializers.HiddenField(
     # default=serializers.CurrentUserDefault(),)
     class Meta:
@@ -29,7 +41,8 @@ class PostSerializer(serializers.ModelSerializer):
             'flagged': {'read_only': True},
             'timestamp': {'read_only': True},
             'updated': {'read_only': True},
-            'user': {'read_only': True}
+            'user': {'read_only': True},
+            #'sharecircle': {'read_only': True},
         }
 
 class PostSerializerAdmin(PostSerializer):
@@ -40,14 +53,5 @@ class PostSerializerAdmin(PostSerializer):
             'user': {'read_only': True}
         }
 
-# #Share circle
-# sharecircle-info
-class ShareCircleInfoSerializer(serializers.ModelSerializer):
-    # user = UserIDSerializer(read_only=False,many=True,)
-    #id = serializers.
-    class Meta:
-        model = ShareCircle
-        fields = ['id', 'title', 'description', 'user', 'admin', 'user']
-        #depth = 2
-        
+
 

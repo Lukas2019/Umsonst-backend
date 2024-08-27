@@ -82,7 +82,7 @@ class MyItemView(viewsets.ModelViewSet):
     admin = False
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(user=self.request.user, sharecircle=[self.request.user.post_circle])
 
     def get_serializer_class(self):
         if self.admin:
@@ -320,3 +320,4 @@ class ShareCircleLeavePostView(APIView):
         share_circle.poster.remove(request.user)
         return Response({"detail": "You have successfully left the ShareCircle"},
                         status=status.HTTP_200_OK)
+    

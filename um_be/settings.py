@@ -30,7 +30,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['web', 'localhost','api.umsonstapp.de','02064-54968.pph-server.de']
 CSRF_TRUSTED_ORIGINS = ['https://api.umsonstapp.de/',
-                        'http://02064-54968.pph-server.de/' ]
+                        'http://02064-54968.pph-server.de/',
+                         'https://localhost:8000' ]
 
 
 
