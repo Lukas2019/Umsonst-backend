@@ -1,3 +1,4 @@
+from django.core.mail import EmailMessage
 from django.db import models
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.contrib.auth import get_user_model
@@ -11,6 +12,25 @@ from django_rest_passwordreset.signals import reset_password_token_created
 from django.core.mail import send_mail
 from django.conf import settings
 #Users = get_user_model()
+import threading
+from threading import Thread
+
+EMAIL_HOST_USER = "noreply@umsonstapp.de"
+
+class EmailThread(threading.Thread):
+    def __init__(self, subject, html_content, recipient_list):
+        self.subject = subject
+        self.recipient_list = recipient_list
+        self.html_content = html_content
+        threading.Thread.__init__(self)
+
+    def run (self):
+        msg = EmailMessage(self.subject, self.html_content, EMAIL_HOST_USER, self.recipient_list,)
+        msg.content_subtype = "html"
+        msg.send()
+
+def send_html_mail(subject, html_content, recipient_list):
+    EmailThread(subject, html_content, recipient_list).start()
 
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
@@ -25,16 +45,16 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
         this below line is the django default sending email function, 
         takes up some parameter (title(email title), message(email body), from(email sender), to(recipient(s))
     """
-    send_mail(
+    send_html_mail(
         # title:
         "Password Reset for {title}".format(title="Crediation portal account"),
         # message:
         email_plaintext_message,
         # from:https://stackoverflow.com/questions/10384657/django-send-mail-not-working-no-email-delivered
-        "noreply@umsonstapp.de",
+        #"noreply@umsonstapp.de",
         # to:
-        recipient_list = [reset_password_token.user.email],
-        fail_silently=False,
+        [reset_password_token.user.email],
+        #fail_silently=False,
     )
 
 

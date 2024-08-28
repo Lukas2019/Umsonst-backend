@@ -12,6 +12,7 @@ gunicorn = "*"
 sentry-sdk = "*"
 django-rest-passwordreset = "*"
 python-dotenv = "*"
+django-push-notifications = {extras = ["wp", "apns", "fcm"], version = "*"}
 
 [dev-packages]
 
