@@ -11,9 +11,9 @@ from django.urls import reverse
 from django_rest_passwordreset.signals import reset_password_token_created
 from django.core.mail import send_mail
 from django.conf import settings
-#Users = get_user_model()
 import threading
 from threading import Thread
+from django.template.loader import render_to_string
 
 
 class EmailThread(threading.Thread):
@@ -36,19 +36,19 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 
     url = reverse('user:password_reset_change', kwargs={'token': reset_password_token.key})
 
-
+    email_html = render_to_string('email/reset_password_email.html', {
+        'reset_link': settings.HOSTNAME + url
+    })    
     # the below like concatinates your websites reset password url and the reset email token which will be required at a later stage
-    email_plaintext_message = "Open the link to reset your password " + settings.HOSTNAME + url # "{}{}".format(instance.request.build_absolute_uri(url), reset_password_token.key)
-    
     """
         this below line is the django default sending email function, 
         takes up some parameter (title(email title), message(email body), from(email sender), to(recipient(s))
     """
     send_html_mail(
         # title:
-        "Password Reset for {title}".format(title="Crediation portal account"),
+        "UmsonstApp Password Reset",
         # message:
-        email_plaintext_message,
+        email_html,
         # from:https://stackoverflow.com/questions/10384657/django-send-mail-not-working-no-email-delivered
         #"noreply@umsonstapp.de",
         # to:
