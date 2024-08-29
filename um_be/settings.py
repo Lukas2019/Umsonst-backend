@@ -118,11 +118,12 @@ EMAIL_FILE_PATH = "/tmp/app-messages"
 '''
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'wp11279948.mailout.server-he.de'
-EMAIL_USE_TLS = True
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
 EMAIL_PORT = 465
-SERVER_EMAIL = "noreply@umsonstapp.de"
+#SERVER_EMAIL = "wp11279948-umsonstapp"
 DEFAULT_FROM_EMAIL = "noreply@umsonstapp.de"
-EMAIL_HOST_USER = "noreply@umsonstapp.de"
+EMAIL_HOST_USER = "wp11279948-umsonstapp"
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 '''
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
