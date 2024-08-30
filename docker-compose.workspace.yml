@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  workspace:
+    image: mcr.microsoft.com/vscode/devcontainers/python:3.9
+    volumes:
+      - ..:/workspace:cached
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: sleep infinity
+    working_dir: /workspace
+    environment:
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "8000:8000"

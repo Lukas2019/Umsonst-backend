@@ -19,6 +19,10 @@ services:
       - ./config/nginx:/etc/nginx/conf.d
     depends_on:
       - web
+  
+  redis:
+    image: redis:6
+  
   web:
     build: .
     command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn um_be.wsgi -b 0.0.0.0:8000"
@@ -33,3 +37,4 @@ services:
       - POSTGRES_PASSWORD=postgres
     depends_on:
       - db
+      - redis

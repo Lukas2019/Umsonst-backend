@@ -144,6 +144,8 @@ class UnreadMessagesCountView(GenericAPIView):
         for chat in chats:
             unread_count += Message.objects.filter(chat=chat).exclude(user=user).filter(read=False).count()
         return Response({'unread_count': unread_count})
+    
+
 
 class ReadMessagesView(GenericAPIView):
     serializer_class = MessageCreateSerializer
