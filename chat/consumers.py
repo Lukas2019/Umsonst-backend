@@ -1,4 +1,4 @@
-'''
+
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import Chat, Message
@@ -39,5 +39,3 @@ class UnreadMessagesCountConsumer(AsyncWebsocketConsumer):
         for chat in chats:
             unread_count += Message.objects.filter(chat=chat).exclude(user=user).filter(read=False).count()
         return unread_count
-
-        '''

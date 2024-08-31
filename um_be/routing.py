@@ -1,4 +1,4 @@
-'''
+
 import os
 
 from websocket.middlewares import WebSocketJWTAuthMiddleware
@@ -16,4 +16,3 @@ application = ProtocolTypeRouter(
         "websocket": WebSocketJWTAuthMiddleware(URLRouter(routing.websocket_urlpatterns)),
     }
 )
-'''
