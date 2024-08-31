@@ -5,15 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python-Debugger: Django",
+            "name": "Python: Webapp",
             "type": "debugpy",
             "request": "launch",
-            "args": [
-                "runserver"
-            ],
-            "django": true,
-            "autoStartBrowser": false,
-            "program": "${workspaceFolder}/manage.py"
+            "program": "/usr/local/bin/gunicorn",
+            "gevent": true,
+            "args": ["um_be.wsgi", "--bind=127.0.0.1:8000", "--reload", "-w", "1", "--timeout=7200"],
+            //"postDebugTask": "killdebugger"
         }
     ]
 }
