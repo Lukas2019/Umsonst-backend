@@ -2,7 +2,7 @@
 asgiref==3.8.1; python_version >= '3.8'
 async-timeout==4.0.3; python_full_version < '3.11.3'
 certifi==2024.8.30; python_version >= '3.6'
-channels==4.1.0; python_version >= '3.8'
+channels[daphne]==4.1.0; python_version >= '3.8'
 channels-redis==4.2.0; python_version >= '3.8'
 django==5.1; python_version >= '3.10'
 django-rest-passwordreset==1.4.1
@@ -18,3 +18,4 @@ sentry-sdk==2.13.0; python_version >= '3.6'
 sqlparse==0.5.1; python_version >= '3.8'
 typing-extensions==4.12.2; python_version < '3.11'
 urllib3==2.2.2; python_version >= '3.8'
+gevent==24.2.1; python_version >= '3.7'

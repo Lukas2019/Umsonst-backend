@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "/usr/local/bin/gunicorn",
             "gevent": true,
-            "args": ["um_be.wsgi", "--bind=127.0.0.1:8000", "--reload", "-w", "1", "--timeout=7200"],
+            "args": ["um_be.wsgi:application", "--bind=0.0.0.0:8000", "--reload", "-w", "1", "--timeout=7200"],
             //"postDebugTask": "killdebugger"
         }
     ]

@@ -2,6 +2,8 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import Chat, Message
+import json
+from channels.generic.websocket import WebsocketConsumer
 
 class UnreadMessagesCountConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -39,3 +41,21 @@ class UnreadMessagesCountConsumer(AsyncWebsocketConsumer):
         for chat in chats:
             unread_count += Message.objects.filter(chat=chat).exclude(user=user).filter(read=False).count()
         return unread_count
+    
+
+
+class ChatConsumer(WebsocketConsumer):
+    def connect(self):
+        self.accept()
+
+    def disconnect(self, close_code):
+        pass
+
+    def receive(self, text_data):
+        text_data_json = json.loads(text_data)
+        message = text_data_json['message']
+
+        # Broadcast the received message to all clients
+        self.send(text_data=json.dumps({
+            'message': message
+        }))

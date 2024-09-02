@@ -1,8 +1,8 @@
 {
     "name": "Django Dev Container",
     "dockerComposeFile": [
-        "../docker-compose.yml",
-        "docker-compose.workspace.yml"
+        "../docker-compose-dev.yml",
+        //"docker-compose.workspace.yml"
     ],
     "containerUser": "Lukas2019", //"${localEnv:USER}",
     "service": "web",

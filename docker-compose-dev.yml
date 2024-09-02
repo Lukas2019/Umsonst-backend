@@ -1,40 +1,40 @@
-version: "3.9"
+version: "3.3"
 
 services:
   db:
     image: postgres
     volumes:
       - ./data/db:/var/lib/postgresql/data
-    ports:
-      - '5400:5432'
     environment:
       - POSTGRES_NAME=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-#  nginx:
-#    image: nginx:1.13-alpine
-#    container_name: nginx01
-#    ports:
-#      - "80:8000"
-#    volumes:
-#      - .:/code
-#      - ./config/nginx:/etc/nginx/conf.d
-#    depends_on:
-#      - web
+  nginx:
+    image: nginx:1.13-alpine
+    container_name: nginx01
+    ports:
+      - "80:8000"
+    volumes:
+      - .:/code
+      - ./config/nginx:/etc/nginx/conf.d
+    depends_on:
+      - web
+  
+  redis:
+    image: redis:6
+  
   web:
     build: .
-    #command: bash -c "python manage.py makemigrations && python manage.py
-    #migrate && python manage.py collectstatic --noinput && python manage.py
-     # runserver -p 80"
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && sleep infinity"
       #command: tail -F anything
     volumes:
       - .:/code
     ports:
-      - "80:8000"
+      - "8000"
     environment:
       - POSTGRES_NAME=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - DJANGO_SETTINGS_MODULE=um_be.dev_settings
     depends_on:
       - db
+      - redis
