@@ -4,5 +4,5 @@ from . import consumers
 
 websocket_urlpatterns = [
     re_path(r'ws/unread_messages_count/$', consumers.UnreadMessagesCountConsumer.as_asgi()),
-    path('ws/chat/', consumers.ChatConsumer),
+    re_path(r"ws/chat/(?P<room_name>\w+)/$", consumers.ChatConsumer.as_asgi()),
 ]

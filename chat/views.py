@@ -163,3 +163,10 @@ class ReadMessagesView(GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
+    
+
+def index(request):
+    return render(request, "chat/index.html")
+
+def room(request, room_name):
+    return render(request, "chat/room.html", {"room_name": room_name})

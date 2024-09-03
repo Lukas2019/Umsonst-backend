@@ -1,6 +1,11 @@
-version: "3.3"
+version: "3.5"
 
 services:
+  redis:
+    image: redis:latest
+    networks: 
+      - redisnet
+
   db:
     image: postgres
     volumes:
@@ -9,32 +14,53 @@ services:
       - POSTGRES_NAME=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+    networks:
+      - dbnet
+
+  django_wsgi:
+    container_name: django_wsgi
+    build: .
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn um_be.wsgi -b 0.0.0.0:9000"
+    volumes:
+      - .:/code
+    networks: 
+      - webnet
+      - redisnet
+      - dbnet
+    links:
+      - redis
+    depends_on:
+      - db
+  
+  django_asgi:
+    container_name: django_asgi
+    build: .
+    # command: python manage.py runserver 0.0.0.0:8000
+    command: daphne -b 0.0.0.0 -p 8000 um_be.asgi:application
+    volumes:
+      - .:/code
+    networks: 
+      - webnet
+      - redisnet
+      - dbnet
+    links:
+      - redis
+  
   nginx:
-    image: nginx:1.13-alpine
-    container_name: nginx01
-    ports:
-      - "80:8000"
+    image: nginx:1.15.0
+    depends_on:
+      - django_asgi
+      - django_wsgi
     volumes:
       - .:/code
       - ./config/nginx:/etc/nginx/conf.d
-    depends_on:
-      - web
-  
-  redis:
-    image: redis:6
-  
-  web:
-    build: .
-    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn um_be.wsgi -b 0.0.0.0:8000"
-      #command: tail -F anything
-    volumes:
-      - .:/code
+      - ./static:/static
+    networks:
+      - webnet
     ports:
-      - "8000"
-    environment:
-      - POSTGRES_NAME=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-    depends_on:
-      - db
-      - redis
+      - "80:9000"
+
+networks: 
+  webnet:
+  redisnet:
+  dbnet:
