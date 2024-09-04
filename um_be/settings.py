@@ -28,10 +28,10 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['web', 'localhost','api.umsonstapp.de','02064-54968.pph-server.de']
+ALLOWED_HOSTS = ["*"] #['web', 'localhost','api.umsonstapp.de','02064-54968.pph-server.de']
 CSRF_TRUSTED_ORIGINS = ['https://api.umsonstapp.de/',
                         'http://02064-54968.pph-server.de/',
-                         'https://localhost:8000' ]
+                         'https://localhost:8000','ws://localhost' ]
 
 
 
@@ -92,7 +92,7 @@ WSGI_APPLICATION = 'um_be.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-'''
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -111,7 +111,7 @@ DATABASES = {
         'PORT': 5432,
     }
 }
-
+'''
 '''
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 EMAIL_FILE_PATH = "/tmp/app-messages"
@@ -201,8 +201,20 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
-# Channels
 
+# Channels
+ASGI_APPLICATION = "mysite.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis", 6379)],
+        },
+    },
+}
+
+WSGI_APPLICATION = 'um_be.wsgi.application'
+ASGI_APPLICATION = 'um_be.asgi.application'
 
 # docker deployment
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')

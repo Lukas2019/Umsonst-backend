@@ -1,6 +1,11 @@
-version: "3.3"
+version: "3.5"
 
 services:
+  redis:
+    image: redis:latest
+    networks: 
+      - redisnet
+
   db:
     image: postgres
     volumes:
@@ -9,32 +14,38 @@ services:
       - POSTGRES_NAME=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+    networks:
+      - dbnet
+
+  
+  django_asgi:
+    container_name: django_asgi
+    build: .
+    # command: python manage.py runserver 0.0.0.0:8000
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && sleep infinity"
+    volumes:
+      - .:/code
+    networks: 
+      - webnet
+      - redisnet
+      - dbnet
+    links:
+      - redis
+  
   nginx:
-    image: nginx:1.13-alpine
-    container_name: nginx01
-    ports:
-      - "80:8000"
+    image: nginx:1.15.0
+    depends_on:
+      - django_asgi
     volumes:
       - .:/code
       - ./config/nginx:/etc/nginx/conf.d
-    depends_on:
-      - web
-  
-  redis:
-    image: redis:6
-  
-  web:
-    build: .
-    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && sleep infinity"
-      #command: tail -F anything
-    volumes:
-      - .:/code
+      - ./static:/static
+    networks:
+      - webnet
     ports:
-      - "8000"
-    environment:
-      - POSTGRES_NAME=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-    depends_on:
-      - db
-      - redis
+      - "80:80"
+
+networks: 
+  webnet:
+  redisnet:
+  dbnet:

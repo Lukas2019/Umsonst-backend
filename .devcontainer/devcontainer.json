@@ -4,8 +4,8 @@
         "../docker-compose-dev.yml",
         //"docker-compose.workspace.yml"
     ],
-    "containerUser": "Lukas2019", //"${localEnv:USER}",
-    "service": "web",
+    "containerUser": "${localEnv:USER}",
+    "service": "django_asgi",
 
     "build": {
         "args": {
@@ -17,7 +17,11 @@
 
     "customizations": {
 		"vscode": {
-			"settings": {},
+            "workspaceMount": "source=${localWorkspaceFolder}/sub-folder,target=/workspace,type=bind",
+            "workspaceFolder": "/code",
+
+			"settings": {
+            },
 			"extensions": [
                 "GitHub.copilot",
                 "ms-python.python",

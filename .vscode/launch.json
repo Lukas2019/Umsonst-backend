@@ -4,13 +4,14 @@
     // Weitere Informationen finden Sie unter https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
-            "name": "Python: Webapp",
+            "name": "Python: Daphne",
             "type": "debugpy",
             "request": "launch",
-            "program": "/usr/local/bin/gunicorn",
+            "program": "/usr/local/bin/daphne",
             "gevent": true,
-            "args": ["um_be.wsgi:application", "--bind=0.0.0.0:8000", "--reload", "-w", "1", "--timeout=7200"],
+            "args": [ "-b0.0.0.0", "-p8000", "um_be.asgi:application"],
             //"postDebugTask": "killdebugger"
         }
     ]

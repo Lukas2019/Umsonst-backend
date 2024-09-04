@@ -17,26 +17,12 @@ services:
     networks:
       - dbnet
 
-  django_wsgi:
-    container_name: django_wsgi
-    build: .
-    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn um_be.wsgi -b 0.0.0.0:9000"
-    volumes:
-      - .:/code
-    networks: 
-      - webnet
-      - redisnet
-      - dbnet
-    links:
-      - redis
-    depends_on:
-      - db
   
   django_asgi:
     container_name: django_asgi
     build: .
     # command: python manage.py runserver 0.0.0.0:8000
-    command: daphne -b 0.0.0.0 -p 8000 um_be.asgi:application
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && daphne -b 0.0.0.0 -p 8000 um_be.asgi:application"
     volumes:
       - .:/code
     networks: 
@@ -50,7 +36,6 @@ services:
     image: nginx:1.15.0
     depends_on:
       - django_asgi
-      - django_wsgi
     volumes:
       - .:/code
       - ./config/nginx:/etc/nginx/conf.d
@@ -58,7 +43,7 @@ services:
     networks:
       - webnet
     ports:
-      - "80:9000"
+      - "80:80"
 
 networks: 
   webnet:
