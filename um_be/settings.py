@@ -249,7 +249,5 @@ FCM_DJANGO_SETTINGS = {
     "DELETE_INACTIVE_DEVICES": False,
 }
 
-'CUSTOM_GOOGLE_APPLICATION_CREDENTIALS' = '../umsonst-app-firebase-adminsdk-gcpj3-c9d1fca4b8.json'
-
 # docker deployment
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
