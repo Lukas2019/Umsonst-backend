@@ -7,18 +7,9 @@ from channels.generic.websocket import WebsocketConsumer
 
 class UnreadMessagesCountConsumer(AsyncWebsocketConsumer):
     
-    def connect(self):
-        self.accept()
-        self.room_group_name='test'
-        
-        
-        self.send(text_data=json.dumps({
-            'type':'connection_established',
-            'message':'you are noew connected'
-        }))
-    
-    '''
+ 
     async def connect(self):
+        await self.accept()
         self.user = self.scope["user"]
         self.room_group_name = f"user_{self.user.id}_unread_messages"
 
@@ -29,7 +20,7 @@ class UnreadMessagesCountConsumer(AsyncWebsocketConsumer):
         )
 
         await self.accept()
-    '''
+
     async def disconnect(self, close_code):
         # Leave room group
         await self.channel_layer.group_discard(
