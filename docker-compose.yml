@@ -29,6 +29,10 @@ services:
       - webnet
       - redisnet
       - dbnet
+    environment:
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     links:
       - redis
   

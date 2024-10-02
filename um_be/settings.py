@@ -29,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG')
 
 ALLOWED_HOSTS = ["*"] #['web', 'localhost','api.umsonstapp.de','02064-54968.pph-server.de']
 CSRF_TRUSTED_ORIGINS = ['https://api.umsonstapp.de/',
@@ -96,15 +96,6 @@ WSGI_APPLICATION = 'um_be.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-'''
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -115,12 +106,7 @@ DATABASES = {
         'PORT': 5432,
     }
 }
-'''
-'''
-EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
-EMAIL_FILE_PATH = "/tmp/app-messages"
 
-'''
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'wp11279948.mailout.server-he.de'
 EMAIL_USE_TLS = False
@@ -130,15 +116,7 @@ EMAIL_PORT = 465
 DEFAULT_FROM_EMAIL = "noreply@umsonstapp.de"
 EMAIL_HOST_USER = "wp11279948-umsonstapp"
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
-'''
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp-relay.brevo.com'
-EMAIL_USE_TLS = True
-EMAIL_PORT = 465 #587
-DEFAULT_FROM_EMAIL = "763969001@smtp-brevo.com"
-EMAIL_HOST_USER = "763969001@smtp-brevo.com"
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD_2')
-'''
+
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
