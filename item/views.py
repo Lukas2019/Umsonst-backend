@@ -170,17 +170,18 @@ class ShareCircleInfoView(viewsets.ModelViewSet):
         return Response(serializer.data)
     
 
-class ShareCircleSearchView(generics.ListCreateAPIView):
-    search_fields = ['title']
-    filter_backends = (filters.SearchFilter,)
+class ShareCircleSearchView(generics.ListAPIView):
     queryset = ShareCircle.objects.all()
     serializer_class = ShareCircleInfoSerializer
+    pagination_class = PageNumberPagination
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ['title']
 
-    def get(self, request, *args, **kwargs):
-        sharecircles = ShareCircle.objects.all()
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
         
-        paginator = PageNumberPagination()
-        paginated_sharecircles = paginator.paginate_queryset(sharecircles, request)
+        paginator = self.pagination_class()
+        paginated_sharecircles = paginator.paginate_queryset(queryset, request)
         
         response_data = []
         for sharecircle in paginated_sharecircles:
