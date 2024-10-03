@@ -32,9 +32,10 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = os.environ.get('DEBUG')
 
 ALLOWED_HOSTS = ["*"] #['web', 'localhost','api.umsonstapp.de','02064-54968.pph-server.de']
-CSRF_TRUSTED_ORIGINS = ['https://api.umsonstapp.de/',
-                        'http://02064-54968.pph-server.de/',
-                         'https://localhost:8000','ws://localhost' ]
+CSRF_TRUSTED_ORIGINS = ['https://api.umsonstapp.de',
+                        #'http://02064-54968.pph-server.de/',
+                         'https://localhost:8000','ws://localhost',
+                         'ws://api.umsonstapp.de/' ]
 
 
 
