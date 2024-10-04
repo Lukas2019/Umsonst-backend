@@ -204,7 +204,6 @@ class ShareCircleSearchView(generics.ListAPIView):
                 'is_admin': is_admin,
                 'is_member': is_member,
                 'is_poster': is_poster,
-                # Add more fields here if needed
             }
             response_data.append(sharecircle_data)
         
@@ -304,8 +303,8 @@ class ShareCircleJoinPostView(APIView):
     def post(self, request, slug):
         share_circle = ShareCircle.objects.get(pk=slug)
         if ShareCircle.objects.filter(poster=request.user).exists():
-            return Response({"detail": "You are already a member of an ShareCircle"},
-                            status=status.HTTP_400_BAD_REQUEST)
+            leav_circle = ShareCircle.objects.filter(poster=request.user).first().id
+            ShareCircle.objects.get(pk=leav_circle).poster.remove(request.user)
         share_circle.poster.add(request.user)
         return Response({"detail": "You have successfully joined the ShareCircle"},
                         status=status.HTTP_200_OK)
