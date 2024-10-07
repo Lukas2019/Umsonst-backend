@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.db.models import Max
 from rest_framework.generics import ListCreateAPIView, CreateAPIView, ListAPIView, GenericAPIView
+from fcm_django.models import FCMDevice
+from firebase_admin.messaging import Message as FCMMessage, Notification
 from .models import Chat, Message
 from user.models import User
 from .serializers import ChatSerializer, MessageSerializer,MessageCreateSerializer
@@ -84,7 +86,15 @@ class MessageView(ListCreateAPIView):
 
     def perform_create(self, serializer):
         user = self.request.user
+        user_name = user.username if user.username else user.email
         chat = Chat.objects.get(id=self.kwargs['slug'])
+        user2 = chat.user1 if chat.user1 != user else chat.user2
+        # You can still use .filter() or any methods that return QuerySet (from the chain)
+        device = FCMDevice.objects.filter(user=user2).all()
+        # send_message parameters include: message, dry_run, app
+        device.send_message(FCMMessage(
+            notification=Notification(title=f"Neue Nachricht von {user_name}", body=self.request.data['text'], image="url"),
+        ))
         # Set the user for the message to the current user
         serializer.save(user=user, chat=chat)
 

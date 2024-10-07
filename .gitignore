@@ -2,6 +2,7 @@
 /uploads
 .env
 um_be/settings.py
+google-services.json
 
 # ---> Python
 # Byte-compiled / optimized / DLL files
@@ -647,3 +648,4 @@ tags
 /data/
 
 umsonst-app-firebase-adminsdk-gcpj3-c9d1fca4b8.json
+umsonst-app-firebase.json

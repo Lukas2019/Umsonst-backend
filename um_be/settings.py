@@ -16,6 +16,7 @@ from dotenv import load_dotenv
 #Pushservice
 from firebase_admin import initialize_app, credentials
 from google.auth import load_credentials_from_file
+from firebase_admin import initialize_app
 
 load_dotenv()
 
@@ -210,7 +211,7 @@ class CustomFirebaseCredentials(credentials.ApplicationDefault):
             self._g_credential, self._project_id = load_credentials_from_file(self._account_file_path,
                                                                               scopes=credentials._scopes)
 
-custom_credentials = CustomFirebaseCredentials(os.getenv('CUSTOM_GOOGLE_APPLICATION_CREDENTIALS'))
+custom_credentials = CustomFirebaseCredentials('umsonst-app-firebase.json')
 FIREBASE_MESSAGING_APP = initialize_app(custom_credentials, name='messaging')
 
 FCM_DJANGO_SETTINGS = {
@@ -225,7 +226,7 @@ FCM_DJANGO_SETTINGS = {
      # devices to which notifications cannot be sent,
      # are deleted upon receiving error response from FCM
      # default: False
-    "DELETE_INACTIVE_DEVICES": False,
+    "DELETE_INACTIVE_DEVICES": True,
 }
 
 # docker deployment
