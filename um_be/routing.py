@@ -1,4 +1,4 @@
-
+# not used in this project
 import os
 
 from websocket.middlewares import WebSocketJWTAuthMiddleware

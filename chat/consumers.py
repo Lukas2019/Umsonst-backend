@@ -6,20 +6,20 @@ import json
 from channels.generic.websocket import WebsocketConsumer
 
 class UnreadMessagesCountConsumer(AsyncWebsocketConsumer):
-    
- 
     async def connect(self):
-        await self.accept()
         self.user = self.scope["user"]
-        self.room_group_name = f"user_{self.user.id}_unread_messages"
+        if self.user.is_anonymous:
+            await self.close()
+        else:
+            self.room_group_name = f"user_{self.user.id}_unread_messages"
 
-        # Join room group
-        await self.channel_layer.group_add(
-            self.room_group_name,
-            self.channel_name
-        )
+            # Join room group
+            await self.channel_layer.group_add(
+                self.room_group_name,
+                self.channel_name
+            )
 
-        await self.accept()
+            await self.accept()
 
     async def disconnect(self, close_code):
         # Leave room group
@@ -29,22 +29,16 @@ class UnreadMessagesCountConsumer(AsyncWebsocketConsumer):
         )
 
     async def receive(self, text_data):
-        # Berechnen der ungelesenen Nachrichten
-        unread_count = await self.get_unread_messages_count()
+        # This method can be used to handle messages received from the WebSocket
+        pass
 
-        # Senden der ungelesenen Nachrichten an den WebSocket
+    async def send_unread_count(self, event):
+        unread_count = event['unread_count']
+
+        # Send message to WebSocket
         await self.send(text_data=json.dumps({
             'unread_count': unread_count
         }))
-
-    async def get_unread_messages_count(self):
-        user = self.user
-        chats = Chat.objects.filter(user1_id=user) | Chat.objects.filter(user2_id=user)
-        unread_count = 0
-        for chat in chats:
-            unread_count += Message.objects.filter(chat=chat).exclude(user=user).filter(read=False).count()
-        return unread_count
-    
 
 '''
 class ChatConsumer(WebsocketConsumer):
