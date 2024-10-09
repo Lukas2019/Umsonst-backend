@@ -8,12 +8,12 @@ django = "5.*"
 pillow = "*"
 djangorestframework = "*"
 psycopg2 = "*"
-gunicorn = "*"
 sentry-sdk = "*"
 django-rest-passwordreset = "*"
 python-dotenv = "*"
 channels = "*"
 channels-redis = "*"
+uvicorn = "==0.17.6"
 
 [dev-packages]
 

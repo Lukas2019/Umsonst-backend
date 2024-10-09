@@ -26,3 +26,6 @@ passwords: testUser
 ## Dev
 
 export EMAIL_PASSWORD='password'
+
+## todo:
+https://docs.djangoproject.com/en/4.0/howto/deployment/asgi/uvicorn/#running-django-in-uvicorn
