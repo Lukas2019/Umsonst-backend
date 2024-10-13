@@ -13,6 +13,15 @@
             "gevent": true,
             "args": [ "-b0.0.0.0", "-p8000", "um_be.asgi:application"],
             //"postDebugTask": "killdebugger"
+        },
+        {
+            "name": "Python: uvcorn",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "/usr/local/bin/uvicorn",
+            "gevent": true,
+            "args": ["um_be.asgi:application", "--host","0.0.0.0", "--port", "8000"],
+            //"postDebugTask": "killdebugger"
         }
     ]
 }
