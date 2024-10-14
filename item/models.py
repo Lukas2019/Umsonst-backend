@@ -57,7 +57,10 @@ class ItemPictures(models.Model):
 
 class ShareCircle(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title = models.CharField(max_length=30)
+    title = models.CharField(max_length=30, unique=True)
     description = models.TextField(max_length=140, blank=True, null=True)
     user = models.ManyToManyField(User)
     admin = models.ManyToManyField(User, related_name='sharecircle_admin_set')
+    
+    def __str__(self) -> str:
+        return self.title

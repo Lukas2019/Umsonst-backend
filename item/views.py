@@ -1,4 +1,5 @@
 # god doku https://blog.logrocket.com/django-rest-framework-build-an-api-in-15-minutes/
+from rest_framework.exceptions import APIException
 from django.urls import reverse
 from rest_framework import status, filters, permissions, generics, viewsets, mixins
 from item.models import Item, ItemPictures, ShareCircle
@@ -35,6 +36,11 @@ class APIDokumentation(TemplateView):
             reverse('Image-list')
             ]
 '''
+
+class CustomValidationError(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = 'Invalid data provided.'
+    default_code = 'invalid'
 
 
 class AuthenticatedUserView(APIView):
@@ -82,6 +88,8 @@ class MyItemView(viewsets.ModelViewSet):
     admin = False
 
     def perform_create(self, serializer):
+        if self.request.user.post_circle == None:
+            raise CustomValidationError('Du musst einen HomeCircle beitreten')
         serializer.save(user=self.request.user, sharecircle=[self.request.user.post_circle])
 
     def get_serializer_class(self):
@@ -170,17 +178,18 @@ class ShareCircleInfoView(viewsets.ModelViewSet):
         return Response(serializer.data)
     
 
-class ShareCircleSearchView(generics.ListCreateAPIView):
-    search_fields = ['title']
-    filter_backends = (filters.SearchFilter,)
+class ShareCircleSearchView(generics.ListAPIView):
     queryset = ShareCircle.objects.all()
     serializer_class = ShareCircleInfoSerializer
+    pagination_class = PageNumberPagination
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ['title']
 
-    def get(self, request, *args, **kwargs):
-        sharecircles = ShareCircle.objects.all()
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
         
-        paginator = PageNumberPagination()
-        paginated_sharecircles = paginator.paginate_queryset(sharecircles, request)
+        paginator = self.pagination_class()
+        paginated_sharecircles = paginator.paginate_queryset(queryset, request)
         
         response_data = []
         for sharecircle in paginated_sharecircles:
@@ -203,7 +212,6 @@ class ShareCircleSearchView(generics.ListCreateAPIView):
                 'is_admin': is_admin,
                 'is_member': is_member,
                 'is_poster': is_poster,
-                # Add more fields here if needed
             }
             response_data.append(sharecircle_data)
         
@@ -303,10 +311,10 @@ class ShareCircleJoinPostView(APIView):
     def post(self, request, slug):
         share_circle = ShareCircle.objects.get(pk=slug)
         if ShareCircle.objects.filter(poster=request.user).exists():
-            return Response({"detail": "You are already a member of an ShareCircle"},
-                            status=status.HTTP_400_BAD_REQUEST)
+            leav_circle = ShareCircle.objects.filter(poster=request.user).first().id
+            ShareCircle.objects.get(pk=leav_circle).poster.remove(request.user)
         share_circle.poster.add(request.user)
-        return Response({"detail": "You have successfully joined the ShareCircle"},
+        return Response({"detail": "Du bist dem ShareCircle beigetreten"},
                         status=status.HTTP_200_OK)
     
 class ShareCircleLeavePostView(APIView):
@@ -320,4 +328,11 @@ class ShareCircleLeavePostView(APIView):
         share_circle.poster.remove(request.user)
         return Response({"detail": "You have successfully left the ShareCircle"},
                         status=status.HTTP_200_OK)
+    
+class PosterInAnyShareCircleView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        is_in_share_circle = ShareCircle.objects.filter(poster__id=request.user.id).exists()
+        return Response({'poster_in_share_circle': is_in_share_circle})
     

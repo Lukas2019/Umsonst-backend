@@ -14,6 +14,7 @@ from .views import (
     ShareCircleFeedView,
     ShareCircleJoinPostView,
     ShareCircleLeavePostView,
+    PosterInAnyShareCircleView,
 )
 from django.conf.urls.static import static
 from django.conf import settings
@@ -24,12 +25,13 @@ app_name = 'item'
 urlpatterns = [
     path('sharecircle/',ShareCircleSearchView.as_view(), name='questions'),
     path('sharecircle/my-feed/',ShareCircleFeedView.as_view(), name='my-feed'),
+    path('sharecircle/is-poster/', PosterInAnyShareCircleView.as_view(), name='poster-in-any-sharecircle'),
     path('sharecircle/<slug:pk>/',ShareCircleView.as_view(), name='sharecircle-info'),
     path('sharecircle/<slug:slug>/items/',ShareCircleItemsView.as_view(), name='sharecircle-items'),
-    path('sharecircle/<slug:slug>/join/', ShareCircleJoinView.as_view(), name='join'),
-    path('sharecircle/<slug:slug>/leave/', ShareCircleLeaveView.as_view(), name='leave'),
-    path('sharecircle/<slug:slug>/join-post/', ShareCircleJoinPostView.as_view(), name='join'),
-    path('sharecircle/<slug:slug>/leave-post/', ShareCircleLeavePostView.as_view(), name='leave'),
+    path('sharecircle/<slug:slug>/join/', ShareCircleJoinView.as_view(), name='join-circle'),
+    path('sharecircle/<slug:slug>/leave/', ShareCircleLeaveView.as_view(), name='leave-circle'),
+    path('sharecircle/<slug:slug>/join-post/', ShareCircleJoinPostView.as_view(), name='join-as-poster'),
+    path('sharecircle/<slug:slug>/leave-post/', ShareCircleLeavePostView.as_view(), name='leave-as-poster'),
     path('auth-test/', AuthenticatedUserView.as_view(), name='test'),
     #path('',APIDokumentation.as_view(), name='api'),
     path('item/<slug:pk>/',ItemView.as_view(), name='post'),
