@@ -3,5 +3,15 @@
     "editor.formatOnSave": false,
     "editor.codeActionsOnSave": {
         "source.organizeImports": "never"
-    }
+    },
+
+    "saveAndRunExt": {
+        "commands": [
+          {
+            "match": "\\.(css$|js$|html$|py$)",
+            "isShellCommand": false,
+            "cmd": "workbench.action.debug.restart"
+          }
+        ]
+      }
 }
