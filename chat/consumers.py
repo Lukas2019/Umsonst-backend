@@ -1,7 +1,10 @@
+from calendar import c
 import json
 from math import e
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.core.exceptions import ValidationError
+
+import chat
 from .models import Chat, Message
 from channels.db import database_sync_to_async
 
@@ -115,23 +118,39 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        message = text_data_json["message"]
+        content = text_data_json["content"]
+
+        # Save message to database
+        message = await self.save_message(self.room_name, self.user, content)
 
         # Send message to room group
         await self.channel_layer.group_send(
             self.room_group_name,
             {
                 'type': 'send_message',
-                'user': self.user.id.hex,
-                'message': message,
+                'id': message.id.hex,
+                'userId': str(self.user.id),
+                'username': self.user.username,
+                'content': content,
+                'createdAt': message.created_at.isoformat()
             }
         )
 
     async def send_message(self, event):
-        message = event["message"]
+        id = event["id"]
+        userId = event["userId"]
+        content = event["content"]
+        username = event["username"]
+        createdAt = event["createdAt"]
 
         # Send message to WebSocket
-        await self.send(text_data=json.dumps(event))
+        await self.send(text_data=json.dumps({
+            'id': id,
+            'content': content,
+            'userId': userId,
+            'username': username,
+            'createdAt': createdAt
+        }))
 
     @database_sync_to_async
     def get_chat(self, room_name):
@@ -140,3 +159,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def is_user_in_chat(self, chat, user):
         return user in [chat.user1, chat.user2]
+
+    @database_sync_to_async
+    def save_message(self, room_name, user, message):
+        chat = Chat.objects.get(id=room_name)
+        return Message.objects.create(chat=chat, user=user, text=message)
