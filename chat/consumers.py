@@ -5,7 +5,6 @@ from channels.db import database_sync_to_async
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from .models import Chat, Message
-from asgiref.sync import sync_to_async
 from django.contrib.auth import get_user_model
 
 User = get_user_model()

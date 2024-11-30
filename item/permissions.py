@@ -32,19 +32,14 @@ class IsSharCircleAdminPermission(permissions.BasePermission):
     """
     Allows access only to users who are admins of related sharecircle.
     """
-    type = ''
-
-    def __init__(self, variant: Variant, *args, **kwargs):
-        self.variant = variant
-        super().__init__(*args, **kwargs)
 
     def has_permission(self, request, view):
-        if self.variant == Variant.Item:
+        variant = getattr(view, 'variant', None)
+        if variant == Variant.Item:
             id_obj = view.get_object().sharecircle.admin.id
-        elif self.variant == Variant.ItemPicture:
+        elif variant == Variant.ItemPicture:
             id_obj = view.get_object().forItems.sharecircle.admin.id
-        object = view.get_object()
-        if id_obj == request.user.id:
-            return bool(request.user and request.user.is_authenticated)
         else:
             return False
+
+        return id_obj == request.user.id and request.user.is_authenticated

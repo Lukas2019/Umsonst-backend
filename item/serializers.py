@@ -54,4 +54,8 @@ class PostSerializerAdmin(PostSerializer):
         }
 
 
-
+class ItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Item
+        fields = '__all__'  # Include all fields or specify the ones you need
+        read_only_fields = ['flagged']

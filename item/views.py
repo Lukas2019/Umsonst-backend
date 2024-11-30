@@ -11,7 +11,8 @@ from rest_framework.response import Response
 from .serializers import (PostSerializer,
                           PicturesSerializer,
                           ShareCircleInfoSerializer,
-                          PostSerializerAdmin,)
+                          PostSerializerAdmin,
+                          ItemSerializer,)
 from rest_framework.response import Response
 from .permissions import (IsOwnerPermission,
                           IsSharCircleAdminPermission,
@@ -140,6 +141,20 @@ class ItemView(generics.RetrieveAPIView):
     #     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     # def perform_create(self, serializer):
     #     serializer.save()
+
+
+class FlagItemView(generics.UpdateAPIView):
+    queryset = Item.objects.all()
+    serializer_class = ItemSerializer
+    permission_classes = [permissions.IsAuthenticated, IsSharCircleAdminPermission]
+
+    def update(self, request, *args, **kwargs):
+        item = self.get_object()
+        item.flagged = True
+        item.save()
+        serializer = self.get_serializer(item)
+        return Response(serializer.data)
+
 
 
 class ShareCircleInfoView(viewsets.ModelViewSet):

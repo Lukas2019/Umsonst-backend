@@ -56,29 +56,3 @@ def message_post_save(sender, instance, created, **kwargs):
             }
         )
 
-@receiver(post_save, sender=Message)
-def message_saved(sender, instance, created, **kwargs):
-    # Get the chat and users involved
-    chat = instance.chat
-    users = [chat.user1, chat.user2]
-
-    for user in users:
-        # Exclude the sender
-        if user != instance.user:
-            # Calculate unread count for the user
-            unread_count = Message.objects.filter(
-                Q(chat__user1=user) | Q(chat__user2=user),
-                read=False
-            ).exclude(user=user).count()
-
-            # Send the unread count to the user's group
-            channel_layer = get_channel_layer()
-            group_name = f"user_{user.id}_general_unread_messages"
-
-            async_to_sync(channel_layer.group_send)(
-                group_name,
-                {
-                    'type': 'send_general_unread_count',
-                    'unread_count': unread_count,
-                }
-            )
