@@ -150,6 +150,11 @@ class FlagItemView(generics.UpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         item = self.get_object()
+        # Deaktiviere den User wenn er zwei flaggs hat
+        user = item.user
+        if user.item_set.filter(flagged=True).count() >= 2:
+            user.is_active = False
+            user.save()
         item.flagged = True
         item.save()
         serializer = self.get_serializer(item)
@@ -294,7 +299,7 @@ class ShareCircleFeedView(generics.ListAPIView):
     
     def get_queryset(self):
         share_circles = ShareCircle.objects.filter(user__exact=self.request.user.id).all()
-        return Item.objects.filter(sharecircle__in=share_circles).all().order_by('-timestamp')
+        return Item.objects.filter(sharecircle__in=share_circles, flagged=False).all().order_by('-timestamp')
 
 class ShareCircleJoinView(APIView):
     permission_classes = [permissions.IsAuthenticated]
