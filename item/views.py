@@ -100,7 +100,7 @@ class MyItemView(viewsets.ModelViewSet):
             return PostSerializer
 
     def get_permissions(self):
-        self.admin = IsSharCircleAdminPermission(Variant.Item)
+        self.admin = IsSharCircleAdminPermission()
 
         ac = self.action
         if ac == 'update' or ac == 'partial_update':

@@ -4,6 +4,9 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+
+from item.models import ShareCircle
+from user.models import Complaint
 from .models import Chat, Message
 from django.contrib.auth import get_user_model
 
@@ -122,10 +125,11 @@ class UnreadMessagesGeneralCountConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_unread_count(self, user):
+        share_circle_admin = ShareCircle.objects.filter(admin=self.request.user)
         return Message.objects.filter(
             Q(chat__user1=user) | Q(chat__user2=user),
             read=False
-        ).exclude(user=user).count()
+        ).exclude(user=user).count() + Complaint.objects.filter(user__post_circle__in=share_circle_admin).count()
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):

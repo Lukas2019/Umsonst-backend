@@ -1,3 +1,4 @@
+from os import read
 from django.core.mail import EmailMessage
 from django.db import models
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
@@ -89,6 +90,19 @@ class MyAccountManager(BaseUserManager):
         user.is_staff=True
         user.is_superuser=True
         user.save() #using=self._db)
+
+class Complaint(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='complaints')
+    text = models.TextField(max_length=200)
+    date = models.DateTimeField(auto_now_add=True)
+    read = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = "tbl_complaints"
+
+    def __str__(self):
+        return "Complaint Object " + str(self.user) + " - " + str(self.date)
 
 class User(AbstractBaseUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4,

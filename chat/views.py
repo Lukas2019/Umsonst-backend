@@ -1,14 +1,18 @@
+from os import read
 from django.shortcuts import render
 from django.db.models import Max
 from rest_framework.generics import ListCreateAPIView, CreateAPIView, ListAPIView, GenericAPIView
 from fcm_django.models import FCMDevice
 from firebase_admin.messaging import Message as FCMMessage, Notification
+
+from item.models import ShareCircle
 from .models import Chat, Message
-from user.models import User
+from user.models import Complaint, User
 from .serializers import ChatSerializer, MessageSerializer,MessageCreateSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
+from django.db.models import Q
 
 # Create your views here.
 class ChatsView(ListCreateAPIView):
@@ -140,21 +144,31 @@ class UnreadMessagesChatCountView(GenericAPIView):
         
 class UnreadMessagesCountView(GenericAPIView):
     def get_queryset(self):
+        share_circle_admin = ShareCircle.objects.filter(admin=self.request.user)
         user = self.request.user
         if hasattr(user, '_wrapped'):
             user = user._wrapped
-        return Chat.objects.filter(user1_id=user) | Chat.objects.filter(user2_id=user)
+        chats = Chat.objects.filter(Q(user1=user) | Q(user2=user))
+        complaints = Complaint.objects.filter(user__post_circle__in=share_circle_admin)
+        return chats, complaints
 
     def get(self, request, *args, **kwargs):
         user = self.request.user
         if hasattr(user, '_wrapped'):
             user = user._wrapped
-        chats = self.get_queryset()
+        chats, complaints = self.get_queryset()
+        print(complaints)
         unread_count = 0
+
+        # Count unread messages in chats
         for chat in chats:
             unread_count += Message.objects.filter(chat=chat).exclude(user=user).filter(read=False).count()
+
+        # Count unread messages in complaints
+
+        unread_count += Complaint.objects.filter(user__post_circle__admin=user, read=False).count()
+
         return Response({'unread_count': unread_count})
-    
 
 
 class ReadMessagesView(GenericAPIView):
@@ -174,9 +188,3 @@ class ReadMessagesView(GenericAPIView):
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
     
-
-def index(request):
-    return render(request, "chat/index.html")
-
-def room(request, room_name):
-    return render(request, "chat/room.html", {"room_name": room_name})

@@ -1,4 +1,4 @@
-from user.models import User
+from user.models import User, Complaint
 from rest_framework import serializers
 
 class UserSerializer(serializers.ModelSerializer):
@@ -19,3 +19,9 @@ class MyUserSerializer(serializers.ModelSerializer):
         model = User
         exclude = ('password', 'is_admin', 'is_superuser', 'is_active', 'is_freezed', 'is_staff', )
         read_only_fieled = ['id', 'last_login', 'date_joined', 'is_admin', 'is_superuser', 'is_active', 'is_freezed', 'is_staff', 'username',]
+
+class ComplaintSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Complaint
+        fields = '__all__'
+        read_only_fields = ['id', 'date', 'read']
