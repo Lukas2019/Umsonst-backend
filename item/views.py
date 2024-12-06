@@ -1,9 +1,11 @@
 # god doku https://blog.logrocket.com/django-rest-framework-build-an-api-in-15-minutes/
+import dis
 from rest_framework.exceptions import APIException
 from django.urls import reverse
 from rest_framework import status, filters, permissions, generics, viewsets, mixins
 from item.models import Item, ItemPictures, ShareCircle
 from rest_framework.views import APIView
+from user.models import User
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -19,6 +21,8 @@ from .permissions import (IsOwnerPermission,
                           Variant,)
 from rest_framework.decorators import action
 from django.views.generic import TemplateView
+import requests
+from django.conf import settings
 
 '''
 class APIDokumentation(TemplateView):
@@ -337,6 +341,108 @@ class ShareCircleJoinPostView(APIView):
         return Response({"detail": "Du bist dem ShareCircle beigetreten"},
                         status=status.HTTP_200_OK)
     
+class ShareCircleJoinPostLocationView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        try:
+            # Extract coordinates
+            data = request.data
+            longitude = float(data.get('longitude'))
+            latitude = float(data.get('latitude'))
+            
+            # Validate coordinates
+            if not (-180 <= longitude <= 180 and -90 <= latitude <= 90):
+                return Response(
+                    {"detail": "Invalid coordinate values"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Make HERE API request
+            api_key = settings.HERE_API_KEY
+            url = "https://revgeocode.search.hereapi.com/v1/revgeocode"
+            params = {
+                'at': f"{longitude},{latitude}",
+                'lang': 'de-DE',
+                'apiKey': api_key
+            }
+
+            response = requests.get(url, params=params)
+            response.raise_for_status()
+            
+            # Extract location data
+            location_data = response.json()
+            if 'items' in location_data and location_data['items']:
+                location = location_data['items'][0]['address'].get('city', '')
+                district = location_data['items'][0]['address'].get('district', '')
+                if district == location:
+                    district = 'Kernstadt'
+                
+                if not location:
+                    return Response(
+                        {"detail": "No city found for these coordinates"},
+                        status=status.HTTP_404_NOT_FOUND
+                    )
+            else:
+                return Response(
+                    {"detail": f"Location data not found {location_data} {params}"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            # Update user location
+            user = request.user
+            user.longitude = longitude
+            user.latitude = latitude
+            user.country = location_data['items'][0]['address'].get('country', '')
+            user.zipcode = location_data['items'][0]['address'].get('postalCode', '')
+            user.city = location
+            user.street = location_data['items'][0]['address'].get('street', '')
+            # user.house_number = location_data['items'][0]['address'].get('houseNumber', '')
+            user.save()
+
+            # Handle share circle
+            share_circle, created = ShareCircle.objects.get_or_create(
+                title=f"{location} {district}".strip()
+            )
+
+            # Add admin user if share circle was created
+            if created:
+                share_circle.description = f"ShareCircle für {location} {district}"
+                share_circle.admin.add(User.objects.get(is_superuser=True))
+                share_circle.user.add(User.objects.get(is_superuser=True))
+                share_circle.save()
+
+            # Remove user from previous share circle if exists
+            if ShareCircle.objects.filter(poster=user).exists():
+                old_circle = ShareCircle.objects.filter(poster=user).first()
+                old_circle.poster.remove(user)
+
+            # Add user to new share circle
+            share_circle.poster.add(user)
+            share_circle.user.add(user)
+            share_circle.save()
+
+            return Response({
+                "detail": "Successfully updated location and share circle",
+                "location": location,
+                "district": district,
+                "coordinates": {
+                    "longitude": longitude,
+                    "latitude": latitude
+                }
+            }, status=status.HTTP_200_OK)
+
+        except ValueError:
+            return Response(
+                {"detail": "Invalid coordinate format"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        except requests.RequestException as e:
+            return Response(
+                {"detail": f"Error fetching location data: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+    
 class ShareCircleLeavePostView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -355,4 +461,3 @@ class PosterInAnyShareCircleView(APIView):
     def get(self, request, *args, **kwargs):
         is_in_share_circle = ShareCircle.objects.filter(poster__id=request.user.id).exists()
         return Response({'poster_in_share_circle': is_in_share_circle})
-    

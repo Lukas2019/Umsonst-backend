@@ -7,7 +7,8 @@ class ItemAdmin(admin.ModelAdmin):
 
 
 class ShareCircleAdmin(admin.ModelAdmin):
-    list_display = ('title',)
+    list_display = ('title','id')
+
 
 # admin.site.register(Item, ItemAdmin)
 admin.site.register(ItemPictures)
