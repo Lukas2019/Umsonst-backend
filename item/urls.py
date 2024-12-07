@@ -25,9 +25,9 @@ from rest_framework import routers
 app_name = 'item'
 
 urlpatterns = [
-    path('sharecircle/',ShareCircleSearchView.as_view(), name='questions'),
+    path('sharecircle/',ShareCircleSearchView.as_view(), name='sharecircle-search'),
     path('sharecircle/my-feed/',ShareCircleFeedView.as_view(), name='my-feed'),
-    path('sharecircle/is-poster/', PosterInAnyShareCircleView.as_view(), name='poster-in-any-sharecircle'),
+    path('sharecircle/is-poster/', PosterInAnyShareCircleView.as_view(), name='poster-in-sharecircle'),
     path('sharecircle/join-post-location/', ShareCircleJoinPostLocationView.as_view(), name='join-as-poster-location'),
     path('sharecircle/<slug:pk>/',ShareCircleView.as_view(), name='sharecircle-info'),
     path('sharecircle/<slug:slug>/items/',ShareCircleItemsView.as_view(), name='sharecircle-items'),

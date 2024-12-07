@@ -107,7 +107,7 @@ class Complaint(models.Model):
 class User(AbstractBaseUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4,
     editable=False)
-    email = models.EmailField(verbose_name="email", max_length=60, unique=True, blank=True, null=True, default=None)
+    email = models.EmailField(verbose_name="email", max_length=60, unique=True, default=None)
     #email_verified = models.BooleanField(default=False)
     #verification_code = models.CharField(max_length=30, blank=True, null=True, default=random.randint(1000, 9999))
     Date_of_Birth = models.CharField(max_length=30, blank=True, null=True,

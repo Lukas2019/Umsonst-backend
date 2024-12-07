@@ -261,11 +261,13 @@ class ShareCircleView(generics.RetrieveUpdateDestroyAPIView):
         return ShareCircle.objects.all()
     
     def get(self, request, *args, **kwargs):
-        sharecircle = ShareCircle.objects.filter(user__exact=self.request.user.id)\
+        sharecircle = ShareCircle.objects\
             .filter(id__exact=kwargs['pk']).first()
         '''
         add is_admin and is_member to the response
         '''
+
+        print(sharecircle)
 
         is_admin = sharecircle.admin == request.user
         is_member = sharecircle.user.filter(id=request.user.id).exists()
@@ -393,7 +395,7 @@ class ShareCircleJoinPostLocationView(APIView):
             user = request.user
             user.longitude = longitude
             user.latitude = latitude
-            user.country = location_data['items'][0]['address'].get('country', '')
+            user.country = location_data['items'][0]['address'].get('countryName', '')
             user.zipcode = location_data['items'][0]['address'].get('postalCode', '')
             user.city = location
             user.street = location_data['items'][0]['address'].get('street', '')
@@ -459,5 +461,5 @@ class PosterInAnyShareCircleView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        is_in_share_circle = ShareCircle.objects.filter(poster__id=request.user.id).exists()
+        is_in_share_circle = ShareCircle.objects.filter(poster__id=request.user.id).first().id
         return Response({'poster_in_share_circle': is_in_share_circle})
