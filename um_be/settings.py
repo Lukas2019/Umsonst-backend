@@ -41,7 +41,7 @@ CSRF_TRUSTED_ORIGINS = ['https://api.umsonstapp.de',
 
 
 
-HOSTNAME = 'api.umsonstapp.de'
+HOSTNAME = 'https://api.umsonstapp.de'
 
 ASGI_APPLICATION = "um_be.asgi.application"
 
