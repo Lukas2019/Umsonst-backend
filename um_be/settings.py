@@ -31,7 +31,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 HERE_API_KEY = os.environ.get('HERE_API_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG')
+DEBUG = os.environ.get('DEBUG') == 'True'
 
 ALLOWED_HOSTS = ["*"] #['web', 'localhost','api.umsonstapp.de','02064-54968.pph-server.de']
 CSRF_TRUSTED_ORIGINS = ['https://api.umsonstapp.de',
