@@ -461,5 +461,8 @@ class PosterInAnyShareCircleView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        is_in_share_circle = ShareCircle.objects.filter(poster__id=request.user.id).first().id
-        return Response({'poster_in_share_circle': is_in_share_circle})
+        if ShareCircle.objects.filter(poster__id=request.user.id).exists():
+            is_in_share_circle = ShareCircle.objects.filter(poster__id=request.user.id).first().id
+            return Response({'poster_in_share_circle': is_in_share_circle})
+        else:
+            return Response({'poster_in_share_circle': None})
