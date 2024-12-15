@@ -8,7 +8,8 @@ from .views import (
     ComplaintView,
     BlockUser,
     ComplaintReadView,
-    ComplaintCountView
+    ComplaintCountView,
+    SetPasswordView
 )
 import django_rest_passwordreset
 
@@ -18,6 +19,7 @@ urlpatterns = [
     path('register/', UserCreate.as_view(), name='register'),
     path('password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
     path('password_reset/<str:token>/', SetPassword.as_view(), name='password_reset_change'),
+    path('set-password/', SetPasswordView.as_view(), name='password_change'),
     path('me/', UserViewMe.as_view(),name='my-user'),
     path('complaint/', ComplaintView.as_view(), name='complaint'),
     path('complaint/count/', ComplaintCountView.as_view(), name='complaint-count'),

@@ -6,9 +6,11 @@ from yaml import serialize
 from item.models import ShareCircle
 from user.models import User, Complaint
 from django.shortcuts import render
+from django.contrib.auth import get_user_model
 
 # Create your views here.
-from rest_framework import generics
+from rest_framework import generics, status, permissions
+from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
@@ -87,3 +89,26 @@ class BlockUser(generics.GenericAPIView):
         user.is_active = False
         user.save()
         return Response({'status': 'blocked'}, status=200)
+    
+
+User = get_user_model()
+
+class SetPasswordView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        new_password = request.data.get('new_password')
+        old_password = request.data.get('old_password')
+
+        if not old_password or not new_password:
+            raise ValidationError('Altes und neues Passwort müssen angegeben werden')
+
+        if not user.check_password(old_password):
+            raise ValidationError('Altes Passwort ist falsch')
+
+        user.set_password(new_password)
+        user.save()
+
+        return Response({'status': 'password set'}, status=status.HTTP_200_OK)
+    
