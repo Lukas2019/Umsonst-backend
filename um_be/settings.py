@@ -59,7 +59,7 @@ INSTALLED_APPS = [
     'chat',
     'rest_framework',
     'rest_framework.authtoken',
-    'user',
+    'user.apps.UserConfig',
     'django_rest_passwordreset',
     'fcm_django',
 ]

@@ -5,10 +5,12 @@ from django.urls import reverse
 from rest_framework import status, filters, permissions, generics, viewsets, mixins
 from item.models import Item, ItemPictures, ShareCircle
 from rest_framework.views import APIView
+from um_be.email_utils import send_html_mail
 from user.models import User
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from django.template.loader import render_to_string
 
 from .serializers import (PostSerializer,
                           PicturesSerializer,
@@ -17,10 +19,9 @@ from .serializers import (PostSerializer,
                           ItemSerializer,)
 from rest_framework.response import Response
 from .permissions import (IsOwnerPermission,
-                          IsSharCircleAdminPermission,
+                          IsSharCircleAdminPermissionItem,
                           Variant,)
 from rest_framework.decorators import action
-from django.views.generic import TemplateView
 import requests
 from django.conf import settings
 
@@ -88,7 +89,7 @@ class ItemPictureView(mixins.CreateModelMixin,
 class MyItemView(viewsets.ModelViewSet):
     # shows all items some on is allowed to
     permission_classes = [permissions.IsAuthenticated]
-    #serializer_class = PostSerializer
+    serializer_class = PostSerializer
     #queryset = Item.objects.all()
     admin = False
 
@@ -96,15 +97,15 @@ class MyItemView(viewsets.ModelViewSet):
         if self.request.user.post_circle == None:
             raise CustomValidationError('Du musst einen HomeCircle beitreten')
         serializer.save(user=self.request.user, sharecircle=[self.request.user.post_circle])
-
+    '''
     def get_serializer_class(self):
+        self.admin = ShareCircle.objects.filter(admin__exact=self.request.user.id, id__exact=self.kwargs['pk']).exists()
         if self.admin:
             return PostSerializerAdmin
         else:
             return PostSerializer
-
+    '''
     def get_permissions(self):
-        self.admin = IsSharCircleAdminPermission()
 
         ac = self.action
         if ac == 'update' or ac == 'partial_update':
@@ -147,22 +148,49 @@ class ItemView(generics.RetrieveAPIView):
     #     serializer.save()
 
 
-class FlagItemView(generics.UpdateAPIView):
+class FlagItemView(generics.RetrieveAPIView):
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
-    permission_classes = [permissions.IsAuthenticated, IsSharCircleAdminPermission]
+    permission_classes = [permissions.IsAuthenticated, IsSharCircleAdminPermissionItem]
 
-    def update(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         item = self.get_object()
         # Deaktiviere den User wenn er zwei flaggs hat
         user = item.user
-        if user.item_set.filter(flagged=True).count() >= 2:
+        if Item.objects.filter(user = user, flagged=True).count() >= 2:
             user.is_active = False
             user.save()
+            self.banned_email(user, item)
+        else:
+            self.waringEmail(user, item)
         item.flagged = True
         item.save()
         serializer = self.get_serializer(item)
         return Response(serializer.data)
+    
+    def waringEmail(self, user, item):
+
+        email_html = render_to_string('email/flaged_item_user_warning.html', {
+            'title': item.title,
+        })
+
+        send_html_mail(
+            "[Umsonst] Achtung: Artikel wurde gemeldet",
+            email_html,
+            [user.email],
+        )
+
+    def banned_email(self, user, item):
+
+        email_html = render_to_string('email/user_banned.html', {
+            'title': item.title,
+        })
+
+        send_html_mail(
+            "[Umsonst] Sie wurden gesperrt",
+            email_html,
+            [user.email],
+        )
 
 
 
