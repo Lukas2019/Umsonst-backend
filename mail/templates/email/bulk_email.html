@@ -1,0 +1,9 @@
+{% extends "email/base.html" %}
+{% load markdownify %}
+
+{% block content %}
+    Hello {{ user.first_name }},<br/><br/>
+
+    {{ text|markdownify }}
+
+{% endblock content %}
