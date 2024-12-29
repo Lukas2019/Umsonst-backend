@@ -16,21 +16,9 @@ import threading
 from threading import Thread
 from django.template.loader import render_to_string
 
+from um_be.email_utils import send_html_mail
 
-class EmailThread(threading.Thread):
-    def __init__(self, subject, html_content, recipient_list):
-        self.subject = subject
-        self.recipient_list = recipient_list
-        self.html_content = html_content
-        threading.Thread.__init__(self)
 
-    def run (self):
-        msg = EmailMessage(self.subject, self.html_content, "noreply@umsonstapp.de", self.recipient_list,)
-        msg.content_subtype = "html"
-        msg.send()
-
-def send_html_mail(subject, html_content, recipient_list):
-    EmailThread(subject, html_content, recipient_list).start()
 
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
@@ -47,7 +35,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
     """
     send_html_mail(
         # title:
-        "UmsonstApp Password Reset",
+        "Umsonst Password Reset",
         # message:
         email_html,
         # from:https://stackoverflow.com/questions/10384657/django-send-mail-not-working-no-email-delivered

@@ -1,0 +1,11 @@
+{% extends "email/base.html" %}
+
+{% block content %}
+<h1>Warnung: Ihr Artikel wurde gesperrt</h1>
+<p>Lieber Benutzer,</p>
+<p>Ihr Artikel "{{ title }}" wurde von einem Administrator als verdächtig markiert und gesperrt, da dieser gegen unsere <a href="https://umsonstapp.de/allgemeine_geschäftsbedingungen.html">AGB</a>s verstoßen hat.</p>
+<p>Dies ist eine Warnung. Wenn ein weiterer Artikel als verdächtig markiert wird, wird er entfernt und Ihr Konto wird gesperrt.</p>
+<p>Wenn Sie die Entscheidung anfechten möchten, können Sie uns unter <a href="mailto:support@umsonstapp.de">support@umsonstapp.de</a> kontaktieren.</p>
+<p>Freundliche Grüße,</p>
+<p>Ihr Umsonst-Team</p>
+{% endblock content %}

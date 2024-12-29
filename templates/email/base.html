@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Passwort zurücksetzen</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fff8f6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666666;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #FB724C;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .link {
+            color: #FB724C;
+            text-decoration: none;
+        }
+        .link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% block content %}{% endblock content %}
+    </div>
+</body>
+</html>

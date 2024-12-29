@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 import socket
 from dotenv import load_dotenv
-#Pushservice
+# Pushservice
 from firebase_admin import initialize_app, credentials
 from google.auth import load_credentials_from_file
 from firebase_admin import initialize_app
@@ -33,13 +33,11 @@ HERE_API_KEY = os.environ.get('HERE_API_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG') == 'True'
 
-ALLOWED_HOSTS = ["*"] #['web', 'localhost','api.umsonstapp.de','02064-54968.pph-server.de']
+ALLOWED_HOSTS = ["*"]  # ['web', 'localhost','api.umsonstapp.de','02064-54968.pph-server.de']
 CSRF_TRUSTED_ORIGINS = ['https://api.umsonstapp.de',
-                        #'http://02064-54968.pph-server.de/',
-                         'https://localhost:8000','ws://localhost',
-                         'ws://api.umsonstapp.de/' ]
-
-
+                        # 'http://02064-54968.pph-server.de/',
+                        'https://localhost:8000', 'ws://localhost',
+                        'ws://api.umsonstapp.de/']
 
 HOSTNAME = 'https://api.umsonstapp.de'
 
@@ -57,18 +55,20 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'item',
     'chat',
+    'mail',
     'rest_framework',
     'rest_framework.authtoken',
-    'user',
+    'user.apps.UserConfig',
     'django_rest_passwordreset',
     'fcm_django',
+    'markdownify.apps.MarkdownifyConfig',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    #'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -92,8 +92,6 @@ TEMPLATES = [
     },
 ]
 
-
-
 WSGI_APPLICATION = 'um_be.wsgi.application'
 
 # Database
@@ -115,7 +113,7 @@ EMAIL_HOST = 'wp11279948.mailout.server-he.de'
 EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 EMAIL_PORT = 465
-#SERVER_EMAIL = "wp11279948-umsonstapp"
+# SERVER_EMAIL = "wp11279948-umsonstapp"
 DEFAULT_FROM_EMAIL = "noreply@umsonstapp.de"
 EMAIL_HOST_USER = "wp11279948-umsonstapp"
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
@@ -166,18 +164,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_ROOT = BASE_DIR / 'uploads'
 MEDIA_URL = 'files/'
 
-#AUTH_USER_MODEL = 'user.Users'
+# AUTH_USER_MODEL = 'user.Users'
 
-APPEND_SLASH=False
+APPEND_SLASH = False
 
 # Rest
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
-        #'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
-        #'rest_framework.authtoken'
+        # 'rest_framework.authtoken'
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
@@ -185,7 +183,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
 }
-
 
 # Channels
 ASGI_APPLICATION = "mysite.asgi.application"
@@ -201,6 +198,7 @@ CHANNEL_LAYERS = {
 WSGI_APPLICATION = 'um_be.wsgi.application'
 ASGI_APPLICATION = 'um_be.asgi.application'
 
+
 # Pushservice
 class CustomFirebaseCredentials(credentials.ApplicationDefault):
     def __init__(self, account_file_path: str):
@@ -212,21 +210,22 @@ class CustomFirebaseCredentials(credentials.ApplicationDefault):
             self._g_credential, self._project_id = load_credentials_from_file(self._account_file_path,
                                                                               scopes=credentials._scopes)
 
+
 custom_credentials = CustomFirebaseCredentials('umsonst-app-firebase.json')
 FIREBASE_MESSAGING_APP = initialize_app(custom_credentials, name='messaging')
 
 FCM_DJANGO_SETTINGS = {
-     # an instance of firebase_admin.App to be used as default for all fcm-django requests
-     # default: None (the default Firebase app)
+    # an instance of firebase_admin.App to be used as default for all fcm-django requests
+    # default: None (the default Firebase app)
     "DEFAULT_FIREBASE_APP": FIREBASE_MESSAGING_APP,
-     # default: _('FCM Django')
+    # default: _('FCM Django')
     "APP_VERBOSE_NAME": "umsonst-app",
-     # true if you want to have only one active device per registered user at a time
-     # default: False
+    # true if you want to have only one active device per registered user at a time
+    # default: False
     "ONE_DEVICE_PER_USER": False,
-     # devices to which notifications cannot be sent,
-     # are deleted upon receiving error response from FCM
-     # default: False
+    # devices to which notifications cannot be sent,
+    # are deleted upon receiving error response from FCM
+    # default: False
     "DELETE_INACTIVE_DEVICES": True,
 }
 
