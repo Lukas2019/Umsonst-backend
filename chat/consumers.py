@@ -1,9 +1,15 @@
 import json
 import logging
+
+from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from firebase_admin.messaging import Notification
+from firebase_admin.messaging import Message as FCMMessage
+from fcm_django.models import FCMDevice
+
 
 from item.models import ShareCircle
 from user.models import Complaint
@@ -201,6 +207,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'unread_count': unread_count,
                 }
             )
+
+            # Send Notification
+            devices = await sync_to_async(FCMDevice.objects.filter(user_id=other_user_id).all)()
+            await sync_to_async(devices.send_message)(FCMMessage(
+                notification=Notification(title=f"Nachricht von {self.user.username if self.user.username else self.user.email}", body=f"{content}"),
+            ))
+
 
         except Exception as e:
             logger.error(f"Error processing message: {e}")

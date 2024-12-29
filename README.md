@@ -29,8 +29,7 @@ https://docs.djangoproject.com/en/4.0/howto/deployment/asgi/uvicorn/#running-dja
 - Liste prüfen (Auswahl Share Circle) Wiederholung 
 
 
-- E-Mail verteiler für AGB änderungen mit 30 Tägigen frist.
-- Push benachrichtigungen fixen
+
 - Kategorien
 - Register Seite überarbeiteten
 - Select multible Share circl einer Stadt als sammel selection.
@@ -46,6 +45,7 @@ https://docs.djangoproject.com/en/4.0/howto/deployment/asgi/uvicorn/#running-dja
 - Mehrere Standorte ermöglichen
 
 - offline chat speicherung
+- push notifications as data msg to open chat
 
 - more beautiful loader for changing the home circle
 - more beautiful loader for every page
