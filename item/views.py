@@ -1,9 +1,11 @@
 # god doku https://blog.logrocket.com/django-rest-framework-build-an-api-in-15-minutes/
 import dis
+
+from django.db.models import Q
 from rest_framework.exceptions import APIException
 from django.urls import reverse
 from rest_framework import status, filters, permissions, generics, viewsets, mixins
-from item.models import Item, ItemPictures, ShareCircle
+from item.models import City, Item, ItemPictures, ShareCircle
 from rest_framework.views import APIView
 from um_be.email_utils import send_html_mail
 from user.models import User
@@ -16,7 +18,7 @@ from .serializers import (PostSerializer,
                           PicturesSerializer,
                           ShareCircleInfoSerializer,
                           PostSerializerAdmin,
-                          ItemSerializer,)
+                          ItemSerializer, CitySearchSerializer, )
 from rest_framework.response import Response
 from .permissions import (IsOwnerPermission,
                           IsSharCircleAdminPermissionItem,
@@ -245,11 +247,11 @@ class ShareCircleSearchView(generics.ListAPIView):
         
         response_data = []
         for sharecircle in paginated_sharecircles:
-            is_admin = sharecircle.admin == request.user
+            # Changed line:
+            is_admin = sharecircle.admin.filter(id=request.user.id).exists()
             is_member = sharecircle.user.filter(id=request.user.id).exists()
             is_poster = sharecircle.poster.filter(id=request.user.id).exists()
             
-            # Extract relevant fields of the users
             users = [user.id for user in sharecircle.user.all()]
             admins = [admin.id for admin in sharecircle.admin.all()]
             poster = [poster.id for poster in sharecircle.poster.all()]
@@ -257,6 +259,7 @@ class ShareCircleSearchView(generics.ListAPIView):
             sharecircle_data = {
                 'id': sharecircle.id,
                 'title': sharecircle.title,
+                'district': sharecircle.district,
                 'description': sharecircle.description,
                 'users': users,
                 'admins': admins,
@@ -268,7 +271,6 @@ class ShareCircleSearchView(generics.ListAPIView):
             response_data.append(sharecircle_data)
         
         return paginator.get_paginated_response(response_data)
-
 
 
 class ShareCircleItemsView(generics.ListAPIView):
@@ -431,10 +433,13 @@ class ShareCircleJoinPostLocationView(APIView):
             user.save()
 
             # Handle share circle
-            share_circle, created = ShareCircle.objects.get_or_create(
-                title=f"{location} {district}".strip()
+            city, created = City.objects.get_or_create(
+                name=location
             )
-
+            share_circle, created = ShareCircle.objects.get_or_create(
+                district=f"{district}".strip(),
+                city=city
+            )
             # Add admin user if share circle was created
             if created:
                 share_circle.description = f"ShareCircle für {location} {district}"
@@ -494,3 +499,13 @@ class PosterInAnyShareCircleView(APIView):
             return Response({'poster_in_share_circle': is_in_share_circle})
         else:
             return Response({'poster_in_share_circle': None})
+        
+
+class CitySearchView(generics.ListAPIView):
+    serializer_class = CitySearchSerializer
+    pagination_class = PageNumberPagination
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ['name', 'sharecircle__district']
+    queryset = City.objects.all()
+    page_size = 40
+    paginate_by = 40

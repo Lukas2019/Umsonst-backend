@@ -57,10 +57,27 @@ class ItemPictures(models.Model):
 
 class ShareCircle(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title = models.CharField(max_length=30, unique=True)
+    district = models.CharField(max_length=30, unique=True)
     description = models.TextField(max_length=140, blank=True, null=True)
+    city = models.ForeignKey('City', on_delete=models.CASCADE, blank=True, null=True)
     user = models.ManyToManyField(User)
     admin = models.ManyToManyField(User, related_name='sharecircle_admin_set')
-    
+
+    @property
+    def title(self):
+        return f"{self.city.name if self.city else ''} {self.district}"
+
+    def is_member(self, user):
+        return user in self.user.all()
+
     def __str__(self) -> str:
-        return self.title
+        return f"{self.city.name if self.city else ''} {self.district}" 
+
+
+class City(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=30, unique=True)
+
+
+    def __str__(self) -> str:
+        return self.name

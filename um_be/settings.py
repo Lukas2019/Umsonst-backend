@@ -61,7 +61,7 @@ INSTALLED_APPS = [
     'user.apps.UserConfig',
     'django_rest_passwordreset',
     'fcm_django',
-    'markdownify.apps.MarkdownifyConfig',
+    'markdownify.apps.MarkdownifyConfig'
 ]
 
 MIDDLEWARE = [
