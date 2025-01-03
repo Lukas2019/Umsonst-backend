@@ -2,6 +2,7 @@
 import dis
 
 from django.db.models import Q
+from pyasn1_modules.rfc5280 import id_at_initials
 from rest_framework.exceptions import APIException
 from django.urls import reverse
 from rest_framework import status, filters, permissions, generics, viewsets, mixins
@@ -13,6 +14,8 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.template.loader import render_to_string
+from firebase_admin.messaging import Message as FCMMessage, Notification
+from fcm_django.models import FCMDevice
 
 from .serializers import (PostSerializer,
                           PicturesSerializer,
@@ -98,7 +101,21 @@ class MyItemView(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         if self.request.user.post_circle == None:
             raise CustomValidationError('Du musst einen HomeCircle beitreten')
-        serializer.save(user=self.request.user, sharecircle=[self.request.user.post_circle])
+        share_circle = self.request.user.post_circle
+        serializer.save(user=self.request.user, sharecircle=[share_circle])
+        content = serializer.data['title']
+        user_ids = User.objects.filter(item_notifications=True).values_list('id', flat=True)
+        other_user_id = share_circle.user.all().exclude(id=self.request.user.id).filter(id__in=user_ids)
+
+        # Send push notification to all users
+        devices = FCMDevice.objects.filter(user__in=other_user_id)
+        devices.send_message(FCMMessage(
+            notification=Notification(
+                title=f"Neue Anzeige",
+                body=f"{content}"
+            ),
+        ))
+
     '''
     def get_serializer_class(self):
         self.admin = ShareCircle.objects.filter(admin__exact=self.request.user.id, id__exact=self.kwargs['pk']).exists()

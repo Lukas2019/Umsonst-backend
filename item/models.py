@@ -5,7 +5,8 @@ from user.models import User
 
 from django.db import models
 from rest_framework.exceptions import ValidationError
-
+from firebase_admin.messaging import Message as FCMMessage, Notification
+from fcm_django.models import FCMDevice
 
 class Item(models.Model):
     OFFER = 'O'
@@ -15,17 +16,15 @@ class Item(models.Model):
         (SEARCH, 'Search'),
     ]
 
-
     title = models.CharField(max_length=32)
 
     type = models.CharField(max_length=1, choices=TYPES, default=OFFER)
     description = models.TextField()
     itemID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    timestamp = models.DateTimeField(auto_now_add = True, auto_now = False, blank = True)
-    updated = models.DateTimeField(auto_now = True, blank = True)
-    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True, auto_now=False, blank=True)
+    updated = models.DateTimeField(auto_now=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     reserved = models.BooleanField(default=False)
-
 
     is_active = models.BooleanField(default=True)
     flagged = models.BooleanField(default=False)
@@ -42,7 +41,7 @@ def content_file_name(instance, filename):
 def validate_image(fieldfile_obj):
     filesize = fieldfile_obj.size
     megabyte_limit = 5.0
-    if filesize > megabyte_limit*1024*1024:
+    if filesize > megabyte_limit * 1024 * 1024:
         raise ValidationError("Max file size is %sMB" % str(megabyte_limit))
 
 
@@ -71,13 +70,12 @@ class ShareCircle(models.Model):
         return user in self.user.all()
 
     def __str__(self) -> str:
-        return f"{self.city.name if self.city else ''} {self.district}" 
+        return f"{self.city.name if self.city else ''} {self.district}"
 
 
 class City(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=30, unique=True)
-
 
     def __str__(self) -> str:
         return self.name
