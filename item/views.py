@@ -54,12 +54,12 @@ class CustomValidationError(APIException):
     default_code = 'invalid'
 
 
-class AuthenticatedUserView(APIView):
-    permission_classes = [IsAuthenticated]
+class ApiVersionView(APIView):
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request):
         # Wenn der Benutzer authentifiziert ist, wird eine positive Antwort zurückgegeben
-        return Response({"status": "OK"})
+        return Response({"api-version": "0.0.1"})
 
 
 class ItemPictureView(mixins.CreateModelMixin,

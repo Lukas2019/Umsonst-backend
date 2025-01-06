@@ -8,7 +8,7 @@ from .views import (
     CitySearchView,
     ShareCircleItemsView,
     ShareCircleView,
-    AuthenticatedUserView,
+    ApiVersionView,
     ItemView,
     ShareCircleJoinView,
     ShareCircleLeaveView,
@@ -39,7 +39,7 @@ urlpatterns = [
     path('sharecircle/<slug:slug>/join-post/', ShareCircleJoinPostView.as_view(), name='join-as-poster'),
     path('sharecircle/<slug:slug>/leave-post/', ShareCircleLeavePostView.as_view(), name='leave-as-poster'),
     path('item/<uuid:pk>/flag/', FlagItemView.as_view(), name='flag-item'),
-    path('auth-test/', AuthenticatedUserView.as_view(), name='test'),
+    path('api-version/', ApiVersionView.as_view(), name='test'),
     # path('',APIDokumentation.as_view(), name='api'),
     path('item/<slug:pk>/', ItemView.as_view(), name='post'),
 ]
