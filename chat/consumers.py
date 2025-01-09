@@ -176,9 +176,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         try:
             text_data_json = json.loads(text_data)
             content = text_data_json["content"]
+            text_type = text_data_json["type"]
 
             # Save message asynchronously
-            message = await self.save_message(self.room_name, self.user, content)
+            message = await self.save_message(self.room_name, self.user, content, text_type)
 
             # Get other user's ID asynchronously
             other_user_id = await self.get_other_user_id(self.room_name, self.user.id)
@@ -196,7 +197,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'username': self.user.username,
                     'content': content,
                     'createdAt': message.created_at.isoformat(),
-                    'content_type': message.type
+                    'content_type': text_type
                 }
             )
 
@@ -269,9 +270,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         return user in [chat.user1, chat.user2]
 
     @database_sync_to_async
-    def save_message(self, room_name, user, message):
+    def save_message(self, room_name, user, message, text_type):
         chat = Chat.objects.get(id=room_name)
-        return Message.objects.create(chat=chat, user=user, text=message)
+        return Message.objects.create(chat=chat, user=user, text=message, type=text_type)
 
     @database_sync_to_async
     def get_other_user_id(self, room_name, current_user_id):
