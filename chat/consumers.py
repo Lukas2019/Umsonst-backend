@@ -195,7 +195,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'userId': str(self.user.id),
                     'username': self.user.username,
                     'content': content,
-                    'createdAt': message.created_at.isoformat()
+                    'createdAt': message.created_at.isoformat(),
+                    'content_type': message.type
                 }
             )
 
@@ -234,6 +235,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         content = event["content"]
         username = event["username"]
         createdAt = event["createdAt"]
+        type = event["content_type"]
 
         # Send message to WebSocket
         await self.send(text_data=json.dumps({
@@ -241,7 +243,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'content': content,
             'userId': userId,
             'username': username,
-            'createdAt': createdAt
+            'createdAt': createdAt,
+            'type': type
         }))
 
     @database_sync_to_async

@@ -29,7 +29,6 @@ https://docs.djangoproject.com/en/4.0/howto/deployment/asgi/uvicorn/#running-dja
 - Liste prüfen (Auswahl Share Circle) Wiederholung 
 
 
-- Kategorien
 - Artikle über die geschrieben wird im chat anzeigen
     - Löschen anbieten wenn Adresse geteilt wurde. Oder bei einer anderen sinvollen gelegen heit
     - Löschen vom Chat aus ermöglichen
@@ -44,6 +43,7 @@ https://docs.djangoproject.com/en/4.0/howto/deployment/asgi/uvicorn/#running-dja
 
 - offline chat speicherung
 - push notifications as data msg to open chat
+- Kategorien
 
 - more beautiful loader for changing the home circle
 - more beautiful loader for every page

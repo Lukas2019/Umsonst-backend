@@ -352,7 +352,7 @@ class ShareCircleFeedView(generics.ListAPIView):
     
     def get_queryset(self):
         share_circles = ShareCircle.objects.filter(user__exact=self.request.user.id).all()
-        return Item.objects.filter(sharecircle__in=share_circles, flagged=False).all().order_by('-timestamp')
+        return Item.objects.filter(sharecircle__in=share_circles, flagged=False,is_active=True).all().order_by('-timestamp')
 
 class ShareCircleJoinView(APIView):
     permission_classes = [permissions.IsAuthenticated]

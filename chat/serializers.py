@@ -4,7 +4,7 @@ from .models import Chat, Message
 class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
-        fields = ['id', 'text', 'read', 'created_at', 'user', 'chat']
+        fields = ['id', 'text', 'read', 'created_at', 'user', 'chat', 'type']
         read_only_fields = ('user', 'chat')
 
 class MessageCreateSerializer(serializers.ModelSerializer):
