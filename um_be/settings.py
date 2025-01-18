@@ -34,12 +34,13 @@ HERE_API_KEY = os.environ.get('HERE_API_KEY')
 DEBUG = os.environ.get('DEBUG') == 'True'
 
 ALLOWED_HOSTS = ["*"]  # ['web', 'localhost','api.umsonstapp.de','02064-54968.pph-server.de']
-CSRF_TRUSTED_ORIGINS = ['https://api.umsonstapp.de',
+CSRF_TRUSTED_ORIGINS = ['https://api.umsonstapp.de','https://api.natuerliche-ressourcen.eu/',
                         # 'http://02064-54968.pph-server.de/',
                         'https://localhost:8000', 'ws://localhost',
-                        'ws://api.umsonstapp.de/']
+                        'ws://api.umsonstapp.de/',
+                        'wss://api.natuerliche-ressourcen.eu/','ws://api.natuerliche-ressourcen.eu/']
 
-HOSTNAME = 'https://api.umsonstapp.de'
+HOSTNAME = 'https://api.natuerliche-ressourcen.eu'
 
 ASGI_APPLICATION = "um_be.asgi.application"
 
@@ -61,7 +62,7 @@ INSTALLED_APPS = [
     'user.apps.UserConfig',
     'django_rest_passwordreset',
     'fcm_django',
-    'markdownify.apps.MarkdownifyConfig',
+    'markdownify.apps.MarkdownifyConfig'
 ]
 
 MIDDLEWARE = [
@@ -115,7 +116,7 @@ EMAIL_USE_SSL = True
 EMAIL_PORT = 465
 # SERVER_EMAIL = "wp11279948-umsonstapp"
 DEFAULT_FROM_EMAIL = "noreply@umsonstapp.de"
-EMAIL_HOST_USER = "wp11279948-umsonstapp"
+EMAIL_HOST_USER = "wp11279948-nrnr"
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 
 # Password validation

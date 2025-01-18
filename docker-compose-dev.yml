@@ -22,7 +22,7 @@ services:
     container_name: django_asgi
     build: .
     # command: python manage.py runserver 0.0.0.0:8000
-    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && sleep infinity" #
+    command: bash -c "python manage.py collectstatic --noinput && sleep infinity" #python manage.py makemigrations --no-input && python manage.py migrate --no-input && 
     volumes:
       - .:/code
     networks: 

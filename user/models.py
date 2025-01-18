@@ -116,6 +116,8 @@ class User(AbstractBaseUser):
 
     post_circle = models.ForeignKey('item.ShareCircle', on_delete=models.CASCADE, related_name='poster', blank=True, null=True)
 
+    item_notifications = models.BooleanField(default=True)
+
     is_admin = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)

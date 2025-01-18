@@ -5,7 +5,8 @@ from user.models import User
 
 from django.db import models
 from rest_framework.exceptions import ValidationError
-
+from firebase_admin.messaging import Message as FCMMessage, Notification
+from fcm_django.models import FCMDevice
 
 class Item(models.Model):
     OFFER = 'O'
@@ -15,17 +16,15 @@ class Item(models.Model):
         (SEARCH, 'Search'),
     ]
 
-
     title = models.CharField(max_length=32)
 
     type = models.CharField(max_length=1, choices=TYPES, default=OFFER)
     description = models.TextField()
     itemID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    timestamp = models.DateTimeField(auto_now_add = True, auto_now = False, blank = True)
-    updated = models.DateTimeField(auto_now = True, blank = True)
-    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True, auto_now=False, blank=True)
+    updated = models.DateTimeField(auto_now=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     reserved = models.BooleanField(default=False)
-
 
     is_active = models.BooleanField(default=True)
     flagged = models.BooleanField(default=False)
@@ -42,7 +41,7 @@ def content_file_name(instance, filename):
 def validate_image(fieldfile_obj):
     filesize = fieldfile_obj.size
     megabyte_limit = 5.0
-    if filesize > megabyte_limit*1024*1024:
+    if filesize > megabyte_limit * 1024 * 1024:
         raise ValidationError("Max file size is %sMB" % str(megabyte_limit))
 
 
@@ -57,10 +56,26 @@ class ItemPictures(models.Model):
 
 class ShareCircle(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title = models.CharField(max_length=30, unique=True)
+    district = models.CharField(max_length=30, unique=True)
     description = models.TextField(max_length=140, blank=True, null=True)
+    city = models.ForeignKey('City', on_delete=models.CASCADE, blank=True, null=True)
     user = models.ManyToManyField(User)
     admin = models.ManyToManyField(User, related_name='sharecircle_admin_set')
-    
+
+    @property
+    def title(self):
+        return f"{self.city.name if self.city else ''} {self.district}"
+
+    def is_member(self, user):
+        return user in self.user.all()
+
     def __str__(self) -> str:
-        return self.title
+        return f"{self.city.name if self.city else ''} {self.district}"
+
+
+class City(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=30, unique=True)
+
+    def __str__(self) -> str:
+        return self.name

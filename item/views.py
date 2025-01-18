@@ -1,9 +1,12 @@
 # god doku https://blog.logrocket.com/django-rest-framework-build-an-api-in-15-minutes/
 import dis
+
+from django.db.models import Q
+from pyasn1_modules.rfc5280 import id_at_initials
 from rest_framework.exceptions import APIException
 from django.urls import reverse
 from rest_framework import status, filters, permissions, generics, viewsets, mixins
-from item.models import Item, ItemPictures, ShareCircle
+from item.models import City, Item, ItemPictures, ShareCircle
 from rest_framework.views import APIView
 from um_be.email_utils import send_html_mail
 from user.models import User
@@ -11,12 +14,14 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.template.loader import render_to_string
+from firebase_admin.messaging import Message as FCMMessage, Notification
+from fcm_django.models import FCMDevice
 
 from .serializers import (PostSerializer,
                           PicturesSerializer,
                           ShareCircleInfoSerializer,
                           PostSerializerAdmin,
-                          ItemSerializer,)
+                          ItemSerializer, CitySearchSerializer, )
 from rest_framework.response import Response
 from .permissions import (IsOwnerPermission,
                           IsSharCircleAdminPermissionItem,
@@ -49,12 +54,12 @@ class CustomValidationError(APIException):
     default_code = 'invalid'
 
 
-class AuthenticatedUserView(APIView):
-    permission_classes = [IsAuthenticated]
+class ApiVersionView(APIView):
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request):
         # Wenn der Benutzer authentifiziert ist, wird eine positive Antwort zurückgegeben
-        return Response({"status": "OK"})
+        return Response({"api-version": "0.0.1"})
 
 
 class ItemPictureView(mixins.CreateModelMixin,
@@ -96,7 +101,21 @@ class MyItemView(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         if self.request.user.post_circle == None:
             raise CustomValidationError('Du musst einen HomeCircle beitreten')
-        serializer.save(user=self.request.user, sharecircle=[self.request.user.post_circle])
+        share_circle = self.request.user.post_circle
+        serializer.save(user=self.request.user, sharecircle=[share_circle])
+        content = serializer.data['title']
+        user_ids = User.objects.filter(item_notifications=True).values_list('id', flat=True)
+        other_user_id = share_circle.user.all().exclude(id=self.request.user.id).filter(id__in=user_ids)
+
+        # Send push notification to all users
+        devices = FCMDevice.objects.filter(user__in=other_user_id)
+        devices.send_message(FCMMessage(
+            notification=Notification(
+                title=f"Neue Anzeige",
+                body=f"{content}"
+            ),
+        ))
+
     '''
     def get_serializer_class(self):
         self.admin = ShareCircle.objects.filter(admin__exact=self.request.user.id, id__exact=self.kwargs['pk']).exists()
@@ -245,11 +264,11 @@ class ShareCircleSearchView(generics.ListAPIView):
         
         response_data = []
         for sharecircle in paginated_sharecircles:
-            is_admin = sharecircle.admin == request.user
+            # Changed line:
+            is_admin = sharecircle.admin.filter(id=request.user.id).exists()
             is_member = sharecircle.user.filter(id=request.user.id).exists()
             is_poster = sharecircle.poster.filter(id=request.user.id).exists()
             
-            # Extract relevant fields of the users
             users = [user.id for user in sharecircle.user.all()]
             admins = [admin.id for admin in sharecircle.admin.all()]
             poster = [poster.id for poster in sharecircle.poster.all()]
@@ -257,6 +276,7 @@ class ShareCircleSearchView(generics.ListAPIView):
             sharecircle_data = {
                 'id': sharecircle.id,
                 'title': sharecircle.title,
+                'district': sharecircle.district,
                 'description': sharecircle.description,
                 'users': users,
                 'admins': admins,
@@ -268,7 +288,6 @@ class ShareCircleSearchView(generics.ListAPIView):
             response_data.append(sharecircle_data)
         
         return paginator.get_paginated_response(response_data)
-
 
 
 class ShareCircleItemsView(generics.ListAPIView):
@@ -333,7 +352,7 @@ class ShareCircleFeedView(generics.ListAPIView):
     
     def get_queryset(self):
         share_circles = ShareCircle.objects.filter(user__exact=self.request.user.id).all()
-        return Item.objects.filter(sharecircle__in=share_circles, flagged=False).all().order_by('-timestamp')
+        return Item.objects.filter(sharecircle__in=share_circles, flagged=False,is_active=True).all().order_by('-timestamp')
 
 class ShareCircleJoinView(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -431,10 +450,13 @@ class ShareCircleJoinPostLocationView(APIView):
             user.save()
 
             # Handle share circle
-            share_circle, created = ShareCircle.objects.get_or_create(
-                title=f"{location} {district}".strip()
+            city, created = City.objects.get_or_create(
+                name=location
             )
-
+            share_circle, created = ShareCircle.objects.get_or_create(
+                district=f"{district}".strip(),
+                city=city
+            )
             # Add admin user if share circle was created
             if created:
                 share_circle.description = f"ShareCircle für {location} {district}"
@@ -494,3 +516,13 @@ class PosterInAnyShareCircleView(APIView):
             return Response({'poster_in_share_circle': is_in_share_circle})
         else:
             return Response({'poster_in_share_circle': None})
+        
+
+class CitySearchView(generics.ListAPIView):
+    serializer_class = CitySearchSerializer
+    pagination_class = PageNumberPagination
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ['name', 'sharecircle__district']
+    queryset = City.objects.all()
+    page_size = 40
+    paginate_by = 40

@@ -30,11 +30,13 @@ class ChatsView(ListCreateAPIView):
         if serializer.is_valid():
             user1 = request.user
             user2 = serializer.validated_data.get('user2')
+            item = serializer.validated_data.get('item')
             if user1.id.hex == user2.id.hex:
                 return Response({'error': 'You cannot create a chat with yourself'}, status=status.HTTP_400_BAD_REQUEST)
             chat, created = Chat.objects.get_or_create(
                 user1=User.objects.get(id=min(user1.id, user2.id, key=lambda user: user.int)),
                 user2=User.objects.get(id=max(user1.id, user2.id, key=lambda user: user.int)),
+                item=item
             )
             if created:
                 #serializer.save()
@@ -114,6 +116,16 @@ class ChatByUserView(ListAPIView):
         chat = Chat.objects.filter(user1=user).filter(user2=user2) | Chat.objects.filter(user2=user).filter(user1=user2)
         return chat.annotate(last_message_date=Max('messages__created_at')).order_by('-last_message_date')
 
+class ChatByItemUserView(ListAPIView):
+    serializer_class = ChatSerializer
+
+    def get_queryset(self):
+        item = self.kwargs['item']
+        user = self.request.user
+        user2 = User.objects.get(id=self.kwargs['user'])
+        chat = Chat.objects.filter(item=item).filter(Q(user1=user, user2=user2) | Q(user1=user2,user2=user))
+        return chat.annotate(last_message_date=Max('messages__created_at')).order_by('-last_message_date')
+
 
 class LastUnreadMessageView(GenericAPIView):
     serializer_class = MessageSerializer
@@ -187,4 +199,3 @@ class ReadMessagesView(GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
-    

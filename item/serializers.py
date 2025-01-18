@@ -1,4 +1,4 @@
-from .models import ItemPictures, Item, ShareCircle
+from .models import ItemPictures, Item, ShareCircle, City
 from user.models import User
 from rest_framework import serializers
 
@@ -25,7 +25,27 @@ class ShareCircleInfoSerializer(serializers.ModelSerializer):
         model = ShareCircle
         fields = ['id',  'description', 'title', 'admin', 'user']
         #depth = 2
-        
+
+# #City
+
+class ShareCircleTitleSerializer(serializers.ModelSerializer):
+    is_member = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ShareCircle
+        fields = ['district', 'id', 'is_member']
+
+    def get_is_member(self, obj):
+        user = self.context['request'].user
+        return obj.is_member(user)
+
+# city-search
+class CitySearchSerializer(serializers.ModelSerializer):
+    sharecircle_set = ShareCircleTitleSerializer(many=True, read_only=True)
+    class Meta:
+        model = City
+        fields = ['name', 'id', 'sharecircle_set']
+
 
 class PostSerializer(serializers.ModelSerializer):
     images = PicturesSerializerForPost(read_only=True, many=True, )
