@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+from item.models import Item
 from .models import Chat, Message
 
 class MessageSerializer(serializers.ModelSerializer):
@@ -14,8 +16,9 @@ class MessageCreateSerializer(serializers.ModelSerializer):
         read_only_fields = ['read', 'created_at', 'user', 'chat', 'id', 'text']
 
 class ChatSerializer(serializers.ModelSerializer):
+    item = serializers.PrimaryKeyRelatedField(queryset=Item.objects.all(), required=True)
 
     class Meta:
         model = Chat
-        fields = '__all__'
+        fields = "__all__"
         read_only_fields = ('user1',)

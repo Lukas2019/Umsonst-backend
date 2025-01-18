@@ -9,6 +9,7 @@ class Chat(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user1 = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='user1')
     user2 = models.ForeignKey('user.User', on_delete=models.CASCADE, related_name='user2')
+    item = models.ForeignKey('item.Item', on_delete=models.CASCADE, null=True, blank=True)
 
 # Messages
 class Message(models.Model):
