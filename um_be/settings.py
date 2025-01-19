@@ -115,7 +115,7 @@ EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 EMAIL_PORT = 465
 # SERVER_EMAIL = "wp11279948-umsonstapp"
-DEFAULT_FROM_EMAIL = "noreply@umsonstapp.de"
+DEFAULT_FROM_EMAIL = "noreply@natuerliche-ressourcen.eu"
 EMAIL_HOST_USER = "wp11279948-nrnr"
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 

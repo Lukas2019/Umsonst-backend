@@ -9,7 +9,7 @@ class EmailThread(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
-        msg = EmailMessage(self.subject, self.html_content, "noreply@umsonstapp.de", self.recipient_list)
+        msg = EmailMessage(self.subject, self.html_content, "noreply@natuerliche-ressourcen.eu", self.recipient_list)
         msg.content_subtype = "html"
         msg.send()
 
